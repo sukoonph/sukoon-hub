@@ -1,0 +1,1165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Sukoon — Internal Hub</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --brass:       #B08D57;
+  --brass-light: #C9A96E;
+  --brass-dark:  #8A6D3F;
+  --teal:        #3D5148;
+  --teal-light:  #4E6659;
+  --teal-dark:   #2C3C35;
+  --walnut:      #996B48;
+  --walnut-light:#B08060;
+  --sand:        #D6C6AE;
+  --sand-light:  #EDE3D4;
+  --sand-dark:   #C4B095;
+
+  --bg:          #1A1712;
+  --bg-2:        #211E19;
+  --bg-3:        #2A2520;
+  --surface:     #302B25;
+  --surface-2:   #3A342D;
+
+  --text-1:      #EDE3D4;
+  --text-2:      #C4B095;
+  --text-3:      #8A7D6A;
+  --text-4:      #5A5048;
+
+  --border:      rgba(176,141,87,0.15);
+  --border-2:    rgba(176,141,87,0.25);
+
+  --radius:      8px;
+  --radius-lg:   12px;
+  --radius-xl:   16px;
+
+  --font-display: 'Cormorant Garamond', serif;
+  --font-body:    'DM Sans', sans-serif;
+}
+
+html, body { height: 100%; }
+
+body {
+  font-family: var(--font-body);
+  background: var(--bg);
+  color: var(--text-1);
+  display: flex;
+  height: 100vh;
+  overflow: hidden;
+}
+
+/* ── SIDEBAR ── */
+.sidebar {
+  width: 220px;
+  flex-shrink: 0;
+  background: var(--bg-2);
+  border-right: 0.5px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  overflow-y: auto;
+}
+
+.sidebar-brand {
+  padding: 20px 18px 16px;
+  border-bottom: 0.5px solid var(--border);
+}
+
+.brand-mark {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.brand-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  background: linear-gradient(135deg, var(--brass), var(--walnut));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-display);
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--sand-light);
+  letter-spacing: 0.02em;
+}
+
+.brand-name {
+  font-family: var(--font-display);
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--sand);
+  letter-spacing: 0.04em;
+}
+
+.brand-sub {
+  font-size: 10px;
+  color: var(--text-3);
+  margin-top: 1px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.nav-section {
+  font-size: 9px;
+  font-weight: 500;
+  color: var(--text-4);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  padding: 16px 18px 6px;
+}
+
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 8px 14px;
+  margin: 1px 8px;
+  border-radius: var(--radius);
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 400;
+  color: var(--text-3);
+  transition: all 0.15s;
+  user-select: none;
+}
+
+.nav-item:hover {
+  background: var(--surface);
+  color: var(--text-2);
+}
+
+.nav-item.active {
+  background: rgba(176,141,87,0.12);
+  color: var(--brass-light);
+  font-weight: 500;
+  border: 0.5px solid rgba(176,141,87,0.2);
+}
+
+.nav-icon {
+  width: 15px;
+  height: 15px;
+  opacity: 0.7;
+  flex-shrink: 0;
+}
+
+.nav-item.active .nav-icon { opacity: 1; }
+
+.nav-badge {
+  margin-left: auto;
+  background: var(--surface-2);
+  color: var(--text-3);
+  font-size: 10px;
+  padding: 1px 6px;
+  border-radius: 10px;
+}
+
+.sidebar-footer {
+  margin-top: auto;
+  padding: 14px 18px;
+  border-top: 0.5px solid var(--border);
+  display: flex;
+  align-items: center;
+  gap: 9px;
+}
+
+.user-avatar {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--teal), var(--teal-dark));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  font-weight: 500;
+  color: var(--sand);
+  flex-shrink: 0;
+}
+
+.user-name { font-size: 12px; color: var(--text-2); }
+.user-role { font-size: 10px; color: var(--text-4); }
+
+/* ── MAIN ── */
+.main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 24px;
+  height: 52px;
+  border-bottom: 0.5px solid var(--border);
+  background: var(--bg-2);
+  flex-shrink: 0;
+}
+
+.topbar-title {
+  font-family: var(--font-display);
+  font-size: 20px;
+  font-weight: 500;
+  color: var(--sand);
+  letter-spacing: 0.02em;
+}
+
+.topbar-right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.date-chip {
+  font-size: 11px;
+  color: var(--text-3);
+  background: var(--surface);
+  border: 0.5px solid var(--border);
+  border-radius: 20px;
+  padding: 4px 12px;
+}
+
+.content {
+  flex: 1;
+  overflow-y: auto;
+  padding: 24px;
+}
+
+/* ── SHARED COMPONENTS ── */
+.metrics {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+  margin-bottom: 22px;
+}
+
+.metric {
+  background: var(--bg-3);
+  border: 0.5px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 16px;
+}
+
+.metric-label {
+  font-size: 10px;
+  color: var(--text-3);
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  margin-bottom: 8px;
+}
+
+.metric-value {
+  font-family: var(--font-display);
+  font-size: 28px;
+  font-weight: 500;
+  color: var(--sand);
+  line-height: 1;
+}
+
+.metric-sub { font-size: 11px; color: var(--text-4); margin-top: 4px; }
+.metric-sub.good { color: #5C9E7A; }
+.metric-sub.warn { color: #C0704A; }
+
+.section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.section-title {
+  font-family: var(--font-display);
+  font-size: 16px;
+  font-weight: 500;
+  color: var(--sand);
+  letter-spacing: 0.02em;
+}
+
+.btn-add {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 12px;
+  font-family: var(--font-body);
+  color: var(--text-3);
+  background: none;
+  border: 0.5px solid var(--border-2);
+  border-radius: var(--radius);
+  padding: 5px 12px;
+  cursor: pointer;
+  transition: all 0.12s;
+}
+
+.btn-add:hover { background: var(--surface); color: var(--text-2); border-color: var(--brass); }
+
+.card {
+  background: var(--bg-3);
+  border: 0.5px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 18px;
+}
+
+.divider { height: 0.5px; background: var(--border); margin: 14px 0; }
+
+/* ── TASK PAGE ── */
+.task-list { display: flex; flex-direction: column; gap: 5px; margin-bottom: 20px; }
+
+.task-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 11px 14px;
+  border: 0.5px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--bg-3);
+  cursor: pointer;
+  transition: border-color 0.12s, background 0.12s;
+  user-select: none;
+}
+
+.task-item:hover { border-color: var(--border-2); background: var(--surface); }
+.task-item.done { opacity: 0.4; }
+
+.task-check {
+  width: 16px; height: 16px;
+  border-radius: 4px;
+  border: 1.5px solid var(--border-2);
+  flex-shrink: 0;
+  margin-top: 1px;
+  display: flex; align-items: center; justify-content: center;
+  transition: all 0.12s;
+}
+
+.task-item.done .task-check { background: var(--brass); border-color: var(--brass); }
+
+.check-svg { width: 9px; height: 9px; stroke: var(--bg); fill: none; stroke-width: 2.2; }
+
+.task-body { flex: 1; min-width: 0; }
+.task-name { font-size: 13px; color: var(--text-1); line-height: 1.45; }
+.task-item.done .task-name { text-decoration: line-through; color: var(--text-4); }
+
+.task-meta { display: flex; align-items: center; gap: 8px; margin-top: 5px; }
+
+.tag {
+  font-size: 10px;
+  padding: 2px 8px;
+  border-radius: 10px;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+}
+
+.tag-product  { background: rgba(61,81,72,0.5);  color: #8FC4A8; border: 0.5px solid rgba(61,81,72,0.8); }
+.tag-growth   { background: rgba(176,141,87,0.15); color: var(--brass-light); border: 0.5px solid rgba(176,141,87,0.3); }
+.tag-ops      { background: rgba(153,107,72,0.2); color: #D4A07A; border: 0.5px solid rgba(153,107,72,0.4); }
+.tag-eng      { background: rgba(45,70,80,0.4);   color: #7AB8CC; border: 0.5px solid rgba(45,70,80,0.7); }
+.tag-finance  { background: rgba(120,100,60,0.2); color: #C8B080; border: 0.5px solid rgba(120,100,60,0.4); }
+
+.task-due { font-size: 11px; color: var(--text-4); }
+.task-due.hot { color: #C0704A; }
+
+.prio-dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; margin-top: 5px; }
+.p-high { background: #C0704A; }
+.p-mid  { background: var(--brass); }
+.p-low  { background: var(--teal-light); }
+
+.add-row {
+  display: flex; gap: 8px;
+  margin-bottom: 16px;
+  animation: slideDown 0.15s ease;
+}
+@keyframes slideDown { from { opacity:0; transform:translateY(-6px); } to { opacity:1; transform:none; } }
+
+.add-row input, .add-row select {
+  font-size: 13px;
+  font-family: var(--font-body);
+  padding: 8px 12px;
+  border: 0.5px solid var(--border-2);
+  border-radius: var(--radius);
+  background: var(--surface);
+  color: var(--text-1);
+  outline: none;
+}
+.add-row input { flex: 1; }
+.add-row input:focus { border-color: var(--brass); }
+.add-row select { color: var(--text-2); cursor: pointer; }
+
+.btn-primary {
+  font-size: 12px;
+  font-family: var(--font-body);
+  padding: 8px 16px;
+  background: var(--brass);
+  color: var(--bg);
+  border: none;
+  border-radius: var(--radius);
+  cursor: pointer;
+  font-weight: 500;
+  transition: background 0.12s;
+}
+.btn-primary:hover { background: var(--brass-light); }
+
+.btn-ghost {
+  font-size: 12px;
+  font-family: var(--font-body);
+  padding: 8px 12px;
+  background: none;
+  color: var(--text-3);
+  border: 0.5px solid var(--border);
+  border-radius: var(--radius);
+  cursor: pointer;
+  transition: all 0.12s;
+}
+.btn-ghost:hover { background: var(--surface); color: var(--text-2); }
+
+.prog-bar {
+  height: 4px;
+  background: var(--surface-2);
+  border-radius: 10px;
+  margin: 8px 0 4px;
+  overflow: hidden;
+}
+.prog-fill { height: 100%; border-radius: 10px; background: var(--brass); transition: width 0.4s ease; }
+
+.bottom-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+
+.mini-row {
+  display: flex; align-items: center; gap: 8px;
+  padding: 7px 0;
+  border-bottom: 0.5px solid var(--border);
+  font-size: 12px;
+  color: var(--text-3);
+}
+.mini-row:last-child { border-bottom: none; }
+
+/* ── OKR PAGE ── */
+.okr-list { display: flex; flex-direction: column; gap: 14px; margin-bottom: 20px; }
+
+.okr-card {
+  background: var(--bg-3);
+  border: 0.5px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 16px 18px;
+}
+
+.okr-header { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 10px; }
+.okr-title { font-family: var(--font-display); font-size: 15px; font-weight: 500; color: var(--sand); }
+.okr-pct { font-family: var(--font-display); font-size: 22px; font-weight: 500; color: var(--brass-light); }
+
+.kr-list { display: flex; flex-direction: column; gap: 8px; margin-top: 12px; }
+
+.kr-item { display: flex; flex-direction: column; gap: 4px; }
+.kr-label { display: flex; justify-content: space-between; font-size: 12px; color: var(--text-2); }
+.kr-label span:last-child { color: var(--text-3); }
+
+.kr-bar { height: 3px; background: var(--surface-2); border-radius: 10px; overflow: hidden; }
+.kr-fill { height: 100%; border-radius: 10px; background: var(--teal-light); transition: width 0.4s ease; }
+.kr-fill.on-track { background: #5C9E7A; }
+.kr-fill.at-risk   { background: var(--brass); }
+.kr-fill.behind    { background: #C0704A; }
+
+/* ── BUDGET PAGE ── */
+.budget-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 20px; }
+
+.budget-row {
+  display: flex; align-items: center;
+  padding: 10px 14px;
+  border: 0.5px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--bg-3);
+  gap: 12px;
+  font-size: 13px;
+}
+
+.budget-row .b-name { flex: 1; color: var(--text-1); }
+.budget-row .b-cat  { font-size: 10px; color: var(--text-3); }
+.budget-row .b-amt  { font-family: var(--font-display); font-size: 16px; color: var(--sand); }
+.budget-row .b-type { font-size: 10px; padding: 2px 7px; border-radius: 8px; }
+.b-type.income  { background: rgba(61,81,72,0.4); color: #8FC4A8; }
+.b-type.expense { background: rgba(192,112,74,0.2); color: #D4947A; }
+
+/* ── CRM PAGE ── */
+.contact-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 12px; margin-bottom: 20px; }
+
+.contact-card {
+  background: var(--bg-3);
+  border: 0.5px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 16px;
+  transition: border-color 0.12s;
+}
+
+.contact-card:hover { border-color: var(--border-2); }
+
+.contact-top { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
+
+.c-avatar {
+  width: 38px; height: 38px;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--font-display);
+  font-size: 14px;
+  font-weight: 500;
+  flex-shrink: 0;
+}
+
+.c-name { font-size: 14px; font-weight: 500; color: var(--text-1); }
+.c-role { font-size: 11px; color: var(--text-3); margin-top: 1px; }
+
+.c-details { display: flex; flex-direction: column; gap: 5px; }
+
+.c-detail-row {
+  display: flex; align-items: center; gap: 7px;
+  font-size: 11px; color: var(--text-3);
+}
+
+.status-pill {
+  display: inline-block;
+  font-size: 10px;
+  padding: 2px 8px;
+  border-radius: 10px;
+  font-weight: 500;
+  margin-top: 8px;
+}
+
+.s-lead     { background: rgba(176,141,87,0.15); color: var(--brass-light); border: 0.5px solid rgba(176,141,87,0.3); }
+.s-partner  { background: rgba(61,81,72,0.4);    color: #8FC4A8; border: 0.5px solid rgba(61,81,72,0.6); }
+.s-investor { background: rgba(45,70,80,0.4);    color: #7AB8CC; border: 0.5px solid rgba(45,70,80,0.7); }
+.s-vendor   { background: rgba(153,107,72,0.2);  color: #D4A07A; border: 0.5px solid rgba(153,107,72,0.4); }
+
+/* ── HOME ── */
+.home-greeting {
+  font-family: var(--font-display);
+  font-size: 32px;
+  font-weight: 500;
+  color: var(--sand);
+  margin-bottom: 4px;
+  letter-spacing: 0.02em;
+}
+.home-sub { font-size: 13px; color: var(--text-3); margin-bottom: 24px; }
+
+.home-cards { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-bottom: 24px; }
+
+.home-nav-card {
+  background: var(--bg-3);
+  border: 0.5px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 18px;
+  cursor: pointer;
+  transition: all 0.15s;
+  display: flex; flex-direction: column; gap: 8px;
+}
+
+.home-nav-card:hover { border-color: var(--brass); background: var(--surface); }
+
+.hnc-icon {
+  width: 34px; height: 34px;
+  border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  margin-bottom: 4px;
+}
+
+.hnc-title { font-family: var(--font-display); font-size: 16px; font-weight: 500; color: var(--sand); }
+.hnc-desc  { font-size: 12px; color: var(--text-3); line-height: 1.5; }
+.hnc-count { font-size: 11px; color: var(--brass); margin-top: 2px; }
+
+.empty { font-size: 12px; color: var(--text-4); padding: 12px 0; text-align: center; }
+
+/* scrollbar */
+::-webkit-scrollbar { width: 5px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--surface-2); border-radius: 10px; }
+</style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<div class="sidebar">
+  <div class="sidebar-brand">
+    <div class="brand-mark">
+      <div class="brand-icon">S</div>
+      <div>
+        <div class="brand-name">Sukoon</div>
+        <div class="brand-sub">Internal Hub</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="nav-section">Overview</div>
+  <div class="nav-item active" onclick="nav('home', this)">
+    <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
+      <path d="M2 6.5L8 2l6 4.5V14H2V6.5z"/>
+    </svg>
+    Home
+  </div>
+
+  <div class="nav-section">Tools</div>
+  <div class="nav-item" onclick="nav('tasks', this)">
+    <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
+      <rect x="2" y="2" width="12" height="12" rx="2"/>
+      <path d="M5 8l2 2 4-4"/>
+    </svg>
+    Tasks
+    <span class="nav-badge" id="nb-tasks">—</span>
+  </div>
+  <div class="nav-item" onclick="nav('okr', this)">
+    <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
+      <circle cx="8" cy="8" r="6"/>
+      <circle cx="8" cy="8" r="3"/>
+      <circle cx="8" cy="8" r="1" fill="currentColor"/>
+    </svg>
+    Goals & OKRs
+  </div>
+  <div class="nav-item" onclick="nav('budget', this)">
+    <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
+      <path d="M2 4h12v8H2z"/><path d="M5 4V3a1 1 0 011-1h4a1 1 0 011 1v1"/><path d="M8 8v.01"/>
+    </svg>
+    Budget
+  </div>
+  <div class="nav-item" onclick="nav('crm', this)">
+    <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
+      <circle cx="6" cy="5" r="2.5"/><path d="M2 13c0-2.2 1.8-4 4-4s4 1.8 4 4"/>
+      <circle cx="12" cy="5" r="2"/><path d="M12 9c1.7 0 3 1.3 3 3"/>
+    </svg>
+    Contacts & CRM
+  </div>
+
+  <div class="sidebar-footer">
+    <div class="user-avatar">SK</div>
+    <div>
+      <div class="user-name">Sukoon Team</div>
+      <div class="user-role">Founders</div>
+    </div>
+  </div>
+</div>
+
+<!-- MAIN -->
+<div class="main">
+  <div class="topbar">
+    <div class="topbar-title" id="page-title">Home</div>
+    <div class="topbar-right">
+      <span class="date-chip" id="today-date"></span>
+    </div>
+  </div>
+  <div class="content" id="content"></div>
+</div>
+
+<script>
+// ── DATA ──
+const SK = 'sukoon_v2';
+function load(key, def) {
+  try { const v = localStorage.getItem(SK+'_'+key); return v ? JSON.parse(v) : def; } catch(e) { return def; }
+}
+function save(key, val) {
+  try { localStorage.setItem(SK+'_'+key, JSON.stringify(val)); } catch(e) {}
+}
+
+let tasks = load('tasks', [
+  { id:1, name:"Finalize MVP feature list", tag:"product", priority:"high", due:"today", done:false },
+  { id:2, name:"Set up analytics (PostHog)", tag:"eng", priority:"high", due:"today", done:false },
+  { id:3, name:"Draft investor update email", tag:"growth", priority:"high", due:"tomorrow", done:false },
+  { id:4, name:"Define pricing tiers", tag:"product", priority:"mid", due:"this week", done:false },
+  { id:5, name:"Register business entity", tag:"ops", priority:"mid", due:"this week", done:false },
+  { id:6, name:"Set up Stripe", tag:"finance", priority:"mid", due:"this week", done:false },
+  { id:7, name:"Write onboarding email sequence", tag:"growth", priority:"low", due:"next week", done:false },
+  { id:8, name:"Schedule weekly standup", tag:"ops", priority:"low", due:"next week", done:false },
+]);
+let taskId = tasks.length ? Math.max(...tasks.map(t=>t.id))+1 : 1;
+
+let okrs = load('okrs', [
+  { id:1, objective:"Launch MVP to first 50 users", krs:[
+    { label:"Onboard beta users", current:12, target:50, status:"on-track" },
+    { label:"Feature completion", current:70, target:100, status:"on-track" },
+    { label:"NPS score", current:35, target:50, status:"at-risk" },
+  ]},
+  { id:2, objective:"Establish brand presence in PH market", krs:[
+    { label:"Social media followers", current:320, target:1000, status:"behind" },
+    { label:"Press mentions", current:2, target:5, status:"at-risk" },
+    { label:"Partnership conversations", current:3, target:8, status:"on-track" },
+  ]},
+]);
+
+let budget = load('budget', [
+  { id:1, name:"Freelance developer", category:"Engineering", amount:25000, type:"expense" },
+  { id:2, name:"Domain & hosting", category:"Infrastructure", amount:800, type:"expense" },
+  { id:3, name:"Design tools (Figma)", category:"Tools", amount:750, type:"expense" },
+  { id:4, name:"Pre-seed funding", category:"Investment", amount:500000, type:"income" },
+  { id:5, name:"Google Workspace", category:"Tools", amount:400, type:"expense" },
+  { id:6, name:"Market research", category:"Marketing", amount:3000, type:"expense" },
+]);
+let budgetId = budget.length ? Math.max(...budget.map(b=>b.id))+1 : 1;
+
+let contacts = load('contacts', [
+  { id:1, name:"Maria Santos", role:"Potential Investor", company:"Archipelago Ventures", email:"m.santos@archventures.ph", status:"investor" },
+  { id:2, name:"James Reyes", role:"Tech Partner", company:"CodeMNL", email:"james@codemnl.com", status:"partner" },
+  { id:3, name:"Ana Cruz", role:"Early Adopter", company:"Freelance", email:"ana.cruz@gmail.com", status:"lead" },
+  { id:4, name:"David Lim", role:"Branding Agency", company:"Studio Lim", email:"david@studiolim.ph", status:"vendor" },
+]);
+let contactId = contacts.length ? Math.max(...contacts.map(c=>c.id))+1 : 1;
+
+// ── NAV ──
+let currentPage = 'home';
+const pageTitles = { home:'Home', tasks:'Tasks', okr:'Goals & OKRs', budget:'Budget', crm:'Contacts & CRM' };
+
+function nav(page, el) {
+  currentPage = page;
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  if (el) el.classList.add('active');
+  document.getElementById('page-title').textContent = pageTitles[page];
+  render();
+}
+
+function render() {
+  updateBadges();
+  const c = document.getElementById('content');
+  if (currentPage === 'home')   c.innerHTML = renderHome();
+  if (currentPage === 'tasks')  c.innerHTML = renderTasks();
+  if (currentPage === 'okr')    c.innerHTML = renderOKR();
+  if (currentPage === 'budget') c.innerHTML = renderBudget();
+  if (currentPage === 'crm')    c.innerHTML = renderCRM();
+}
+
+function updateBadges() {
+  document.getElementById('nb-tasks').textContent = tasks.filter(t=>!t.done).length;
+}
+
+// ── ESC ──
+function esc(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+function fmt(n) { return Number(n).toLocaleString('en-PH'); }
+
+// ── HOME ──
+function renderHome() {
+  const hour = new Date().getHours();
+  const greet = hour < 12 ? 'Good morning' : hour < 17 ? 'Good afternoon' : 'Good evening';
+  const pendingTasks = tasks.filter(t=>!t.done).length;
+  const todayTasks   = tasks.filter(t=>t.due==='today'&&!t.done).length;
+  const totalIncome  = budget.filter(b=>b.type==='income').reduce((a,b)=>a+b.amount,0);
+  const totalExpense = budget.filter(b=>b.type==='expense').reduce((a,b)=>a+b.amount,0);
+  const avgOkr = okrs.length ? Math.round(okrs.map(o=>{
+    const tot = o.krs.reduce((a,k)=>a+Math.round(k.current/k.target*100),0);
+    return Math.round(tot/o.krs.length);
+  }).reduce((a,b)=>a+b,0)/okrs.length) : 0;
+
+  return `
+    <div class="home-greeting">${greet}, founders.</div>
+    <div class="home-sub">Here's where Sukoon stands today.</div>
+
+    <div class="metrics" style="grid-template-columns:repeat(4,1fr);">
+      <div class="metric">
+        <div class="metric-label">Open tasks</div>
+        <div class="metric-value">${pendingTasks}</div>
+        <div class="metric-sub${todayTasks>0?' warn':''}">${todayTasks} due today</div>
+      </div>
+      <div class="metric">
+        <div class="metric-label">OKR progress</div>
+        <div class="metric-value">${avgOkr}%</div>
+        <div class="metric-sub good">across ${okrs.length} objectives</div>
+      </div>
+      <div class="metric">
+        <div class="metric-label">Budget runway</div>
+        <div class="metric-value">₱${fmt(totalIncome-totalExpense)}</div>
+        <div class="metric-sub">available</div>
+      </div>
+      <div class="metric">
+        <div class="metric-label">Contacts</div>
+        <div class="metric-value">${contacts.length}</div>
+        <div class="metric-sub">${contacts.filter(c=>c.status==='lead').length} leads</div>
+      </div>
+    </div>
+
+    <div class="home-cards">
+      <div class="home-nav-card" onclick="nav('tasks', document.querySelectorAll('.nav-item')[1])">
+        <div class="hnc-icon" style="background:rgba(176,141,87,0.15);">
+          <svg width="18" height="18" viewBox="0 0 16 16" fill="none" stroke="${{brass:'#B08D57'}['brass']||'#B08D57'}" stroke-width="1.5"><rect x="2" y="2" width="12" height="12" rx="2"/><path d="M5 8l2 2 4-4"/></svg>
+        </div>
+        <div class="hnc-title">Task Manager</div>
+        <div class="hnc-desc">Track and manage everything your startup needs to get done.</div>
+        <div class="hnc-count">${pendingTasks} open tasks</div>
+      </div>
+      <div class="home-nav-card" onclick="nav('okr', document.querySelectorAll('.nav-item')[2])">
+        <div class="hnc-icon" style="background:rgba(61,81,72,0.3);">
+          <svg width="18" height="18" viewBox="0 0 16 16" fill="none" stroke="#8FC4A8" stroke-width="1.5"><circle cx="8" cy="8" r="6"/><circle cx="8" cy="8" r="3"/><circle cx="8" cy="8" r="1" fill="#8FC4A8"/></svg>
+        </div>
+        <div class="hnc-title">Goals & OKRs</div>
+        <div class="hnc-desc">Set objectives and track key results for this quarter.</div>
+        <div class="hnc-count">${okrs.length} active objectives</div>
+      </div>
+      <div class="home-nav-card" onclick="nav('budget', document.querySelectorAll('.nav-item')[3])">
+        <div class="hnc-icon" style="background:rgba(153,107,72,0.2);">
+          <svg width="18" height="18" viewBox="0 0 16 16" fill="none" stroke="#D4A07A" stroke-width="1.5"><path d="M2 4h12v8H2z"/><path d="M5 4V3a1 1 0 011-1h4a1 1 0 011 1v1"/><path d="M8 8v.01"/></svg>
+        </div>
+        <div class="hnc-title">Budget Tracker</div>
+        <div class="hnc-desc">Monitor income and expenses as you build.</div>
+        <div class="hnc-count">₱${fmt(totalIncome-totalExpense)} runway</div>
+      </div>
+      <div class="home-nav-card" onclick="nav('crm', document.querySelectorAll('.nav-item')[4])">
+        <div class="hnc-icon" style="background:rgba(45,70,80,0.35);">
+          <svg width="18" height="18" viewBox="0 0 16 16" fill="none" stroke="#7AB8CC" stroke-width="1.5"><circle cx="6" cy="5" r="2.5"/><path d="M2 13c0-2.2 1.8-4 4-4s4 1.8 4 4"/><circle cx="12" cy="5" r="2"/><path d="M12 9c1.7 0 3 1.3 3 3"/></svg>
+        </div>
+        <div class="hnc-title">Contacts & CRM</div>
+        <div class="hnc-desc">Keep track of investors, partners, and leads.</div>
+        <div class="hnc-count">${contacts.length} contacts</div>
+      </div>
+    </div>
+
+    <div class="section-header"><span class="section-title">Today's priorities</span></div>
+    <div style="display:flex;flex-direction:column;gap:5px;">
+      ${tasks.filter(t=>!t.done&&t.due==='today').map(t=>`
+        <div class="mini-row">
+          <div class="prio-dot p-${t.priority}"></div>
+          <span style="flex:1;color:var(--text-2);">${esc(t.name)}</span>
+          <span class="tag tag-${t.tag}" style="font-size:10px;">${{product:'Product',growth:'Growth',ops:'Ops',eng:'Eng',finance:'Finance'}[t.tag]}</span>
+        </div>`).join('') || '<div class="empty">Nothing due today — or all done!</div>'}
+    </div>`;
+}
+
+// ── TASKS ──
+const tagLabels = { product:"Product", growth:"Growth", ops:"Ops", eng:"Eng", finance:"Finance" };
+const prioLabels = { high:"High", mid:"Mid", low:"Low" };
+
+function renderTasks(filter='all') {
+  const total = tasks.length, done = tasks.filter(t=>t.done).length;
+  const pct = total ? Math.round(done/total*100) : 0;
+  const high = tasks.filter(t=>t.priority==='high'&&!t.done).length;
+  const today = tasks.filter(t=>t.due==='today'&&!t.done).length;
+
+  let filtered = tasks;
+  const areas = ['product','growth','ops','eng','finance'];
+
+  return `
+    <div class="metrics">
+      <div class="metric"><div class="metric-label">Total</div><div class="metric-value">${total}</div><div class="metric-sub">tasks</div></div>
+      <div class="metric"><div class="metric-label">Completed</div><div class="metric-value">${done}</div><div class="metric-sub good">${pct}% done</div></div>
+      <div class="metric"><div class="metric-label">High priority</div><div class="metric-value">${high}</div><div class="metric-sub${high>0?' warn':''}">open</div></div>
+      <div class="metric"><div class="metric-label">Due today</div><div class="metric-value">${today}</div><div class="metric-sub">remaining</div></div>
+    </div>
+
+    <div class="section-header">
+      <span class="section-title">All tasks</span>
+      <button class="btn-add" onclick="toggleTaskAdd()">+ Add task</button>
+    </div>
+
+    <div id="task-add-row" style="display:none;">
+      <div class="add-row">
+        <input type="text" id="t-name" placeholder="Task name…" onkeydown="if(event.key==='Enter')addTask()" />
+        <select id="t-tag">
+          <option value="ops">Ops</option>
+          <option value="product">Product</option>
+          <option value="growth">Growth</option>
+          <option value="eng">Engineering</option>
+          <option value="finance">Finance</option>
+        </select>
+        <select id="t-prio">
+          <option value="mid">Mid priority</option>
+          <option value="high">High priority</option>
+          <option value="low">Low priority</option>
+        </select>
+        <select id="t-due">
+          <option value="today">Today</option>
+          <option value="tomorrow">Tomorrow</option>
+          <option value="this week" selected>This week</option>
+          <option value="next week">Next week</option>
+        </select>
+        <button class="btn-primary" onclick="addTask()">Add</button>
+        <button class="btn-ghost" onclick="toggleTaskAdd()">Cancel</button>
+      </div>
+    </div>
+
+    <div class="task-list">
+      ${filtered.map(t=>`
+        <div class="task-item${t.done?' done':''}" onclick="toggleTask(${t.id})">
+          <div class="task-check">
+            ${t.done?`<svg class="check-svg" viewBox="0 0 10 10"><polyline points="1.5,5 4,7.5 8.5,2.5"/></svg>`:''}
+          </div>
+          <div class="task-body">
+            <div class="task-name">${esc(t.name)}</div>
+            <div class="task-meta">
+              <span class="tag tag-${t.tag}">${tagLabels[t.tag]}</span>
+              <span class="task-due${t.due==='today'?' hot':''}">${esc(t.due)}</span>
+            </div>
+          </div>
+          <div class="prio-dot p-${t.priority}"></div>
+        </div>`).join('')}
+    </div>
+
+    <div class="bottom-grid">
+      <div class="card">
+        <div class="section-header" style="margin-bottom:6px;">
+          <span class="section-title">Sprint progress</span>
+          <span style="font-size:12px;color:var(--text-4);">${done} / ${total}</span>
+        </div>
+        <div class="prog-bar"><div class="prog-fill" style="width:${pct}%"></div></div>
+        <div style="font-size:11px;color:var(--text-4);margin-bottom:14px;">${pct===0?'Just getting started':`${pct}% complete`}</div>
+        <div style="font-size:12px;font-weight:500;color:var(--text-3);margin-bottom:10px;">By area</div>
+        ${areas.map(a=>{
+          const tot=tasks.filter(t=>t.tag===a).length; if(!tot)return'';
+          const dn=tasks.filter(t=>t.tag===a&&t.done).length;
+          const p=Math.round(dn/tot*100);
+          const colors={product:'#5C9E7A',growth:'#B08D57',ops:'#C0704A',eng:'#5A8FA0',finance:'#A89060'};
+          return `<div style="margin-bottom:9px;">
+            <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--text-3);margin-bottom:3px;">
+              <span>${{product:'Product',growth:'Growth',ops:'Operations',eng:'Engineering',finance:'Finance'}[a]}</span><span>${dn}/${tot}</span>
+            </div>
+            <div class="prog-bar" style="margin:0;"><div style="height:100%;border-radius:10px;width:${p}%;background:${colors[a]};transition:width 0.4s;"></div></div>
+          </div>`;
+        }).join('')}
+      </div>
+      <div class="card">
+        <div class="section-header" style="margin-bottom:8px;"><span class="section-title">Upcoming</span></div>
+        ${tasks.filter(t=>!t.done).slice(0,6).map(t=>`
+          <div class="mini-row">
+            <div class="prio-dot p-${t.priority}"></div>
+            <span style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${esc(t.name)}</span>
+            <span style="font-size:10px;color:var(--text-4);flex-shrink:0;margin-left:6px;">${esc(t.due)}</span>
+          </div>`).join('') || '<div class="empty">All done!</div>'}
+      </div>
+    </div>`;
+}
+
+function toggleTaskAdd() {
+  const r = document.getElementById('task-add-row');
+  if (!r) return;
+  const showing = r.style.display !== 'none';
+  r.style.display = showing ? 'none' : 'block';
+  if (!showing) document.getElementById('t-name').focus();
+}
+
+function toggleTask(id) {
+  const t = tasks.find(x=>x.id===id);
+  if (t) { t.done=!t.done; save('tasks',tasks); render(); }
+}
+
+function addTask() {
+  const name = document.getElementById('t-name').value.trim();
+  if (!name) return;
+  tasks.push({ id:taskId++, name, tag:document.getElementById('t-tag').value, priority:document.getElementById('t-prio').value, due:document.getElementById('t-due').value, done:false });
+  save('tasks', tasks);
+  render();
+}
+
+// ── OKR ──
+function renderOKR() {
+  return `
+    <div class="metrics" style="grid-template-columns:repeat(3,1fr);">
+      <div class="metric"><div class="metric-label">Objectives</div><div class="metric-value">${okrs.length}</div><div class="metric-sub">this quarter</div></div>
+      <div class="metric"><div class="metric-label">Key results</div><div class="metric-value">${okrs.reduce((a,o)=>a+o.krs.length,0)}</div><div class="metric-sub">tracked</div></div>
+      <div class="metric"><div class="metric-label">Avg progress</div><div class="metric-value">${okrs.length?Math.round(okrs.map(o=>Math.round(o.krs.reduce((a,k)=>a+Math.round(k.current/k.target*100),0)/o.krs.length)).reduce((a,b)=>a+b,0)/okrs.length):0}%</div><div class="metric-sub good">overall</div></div>
+    </div>
+
+    <div class="section-header">
+      <span class="section-title">Objectives</span>
+    </div>
+
+    <div class="okr-list">
+      ${okrs.map(o=>{
+        const avgPct = Math.round(o.krs.reduce((a,k)=>a+Math.round(k.current/k.target*100),0)/o.krs.length);
+        return `<div class="okr-card">
+          <div class="okr-header">
+            <div class="okr-title">${esc(o.objective)}</div>
+            <div class="okr-pct">${avgPct}%</div>
+          </div>
+          <div class="prog-bar" style="margin:0 0 12px;"><div class="prog-fill" style="width:${avgPct}%"></div></div>
+          <div class="kr-list">
+            ${o.krs.map(k=>{
+              const p=Math.min(100,Math.round(k.current/k.target*100));
+              return `<div class="kr-item">
+                <div class="kr-label">
+                  <span>${esc(k.label)}</span>
+                  <span>${fmt(k.current)} / ${fmt(k.target)}</span>
+                </div>
+                <div class="kr-bar"><div class="kr-fill ${k.status}" style="width:${p}%"></div></div>
+              </div>`;
+            }).join('')}
+          </div>
+        </div>`;
+      }).join('')}
+    </div>
+
+    <div style="font-size:11px;color:var(--text-4);display:flex;gap:16px;padding:4px 0;">
+      <span style="display:flex;align-items:center;gap:5px;"><span style="width:8px;height:8px;border-radius:50%;background:#5C9E7A;display:inline-block;"></span>On track</span>
+      <span style="display:flex;align-items:center;gap:5px;"><span style="width:8px;height:8px;border-radius:50%;background:var(--brass);display:inline-block;"></span>At risk</span>
+      <span style="display:flex;align-items:center;gap:5px;"><span style="width:8px;height:8px;border-radius:50%;background:#C0704A;display:inline-block;"></span>Behind</span>
+    </div>`;
+}
+
+// ── BUDGET ──
+function renderBudget() {
+  const income  = budget.filter(b=>b.type==='income').reduce((a,b)=>a+b.amount,0);
+  const expense = budget.filter(b=>b.type==='expense').reduce((a,b)=>a+b.amount,0);
+  const runway  = income - expense;
+
+  return `
+    <div class="metrics">
+      <div class="metric"><div class="metric-label">Total income</div><div class="metric-value">₱${fmt(income)}</div><div class="metric-sub good">received</div></div>
+      <div class="metric"><div class="metric-label">Total expenses</div><div class="metric-value">₱${fmt(expense)}</div><div class="metric-sub">spent</div></div>
+      <div class="metric"><div class="metric-label">Net runway</div><div class="metric-value">₱${fmt(runway)}</div><div class="metric-sub${runway<0?' warn':' good'}">available</div></div>
+      <div class="metric"><div class="metric-label">Line items</div><div class="metric-value">${budget.length}</div><div class="metric-sub">tracked</div></div>
+    </div>
+
+    <div class="section-header">
+      <span class="section-title">All entries</span>
+      <button class="btn-add" onclick="toggleBudgetAdd()">+ Add entry</button>
+    </div>
+
+    <div id="budget-add-row" style="display:none;">
+      <div class="add-row">
+        <input type="text" id="b-name" placeholder="Description…" />
+        <input type="number" id="b-amt" placeholder="Amount (₱)" style="width:130px;" />
+        <select id="b-type">
+          <option value="expense">Expense</option>
+          <option value="income">Income</option>
+        </select>
+        <input type="text" id="b-cat" placeholder="Category" style="width:120px;" />
+        <button class="btn-primary" onclick="addBudget()">Add</button>
+        <button class="btn-ghost" onclick="toggleBudgetAdd()">Cancel</button>
+      </div>
+    </div>
+
+    <div style="display:flex;flex-direction:column;gap:5px;margin-bottom:20px;">
+      ${budget.map(b=>`
+        <div class="budget-row">
+          <div>
+            <div class="b-name">${esc(b.name)}</div>
+            <div class="b-cat">${esc(b.category)}</div>
+          </div>
+          <span class="b-type ${b.type}">${b.type}</span>
+          <div class="b-amt${b.type==='expense'?' ':' '}" style="color:${b.type==='income'?'#8FC4A8':'var(--text-1)'}">
+            ${b.type==='expense'?'−':'+'} ₱${fmt(b.amount)}
+          </div>
+        </div>`).join('')}
+    </div>`;
+}
+
+function toggleBudgetAdd() {
+  const r = document.getElementById('budget-add-row');
+  if (!r) return;
+  const showing = r.style.display !== 'none';
+  r.style.display = showing ? 'none' : 'block';
+  if (!showing) document.getElementById('b-name').focus();
+}
+
+function addBudget() {
+  const name = document.getElementById('b-name').value.trim();
+  const amt  = parseFloat(document.getElementById('b-amt').value);
+  const cat  = document.getElementById('b-cat').value.trim() || 'General';
+  const type = document.getElementById('b-type').value;
+  if (!name || isNaN(amt)) return;
+  budget.push({ id:budgetId++, name, category:cat, amount:amt, type });
+  save('budget', budget);
+  render();
+}
+
+// ── CRM ──
+const avatarColors = [
+  {bg:'rgba(61,81,72,0.4)',  color:'#8FC4A8'},
+  {bg:'rgba(176,141,87,0.2)',color:'#C9A96E'},
+  {bg:'rgba(45,70,80,0.4)',  color:'#7AB8CC'},
+  {bg:'rgba(153,107,72,0.2)',color:'#D4A07A'},
+];
+
+function initials(name) {
+  return name.split(' ').map(w=>w[0]).slice(0,2).join('').toUpperCase();
+}
+
+function renderCRM() {
+  const statusLabels = { lead:'Lead', partner:'Partner', investor:'Investor', vendor:'Vendor' };
+  const statusClass  = { lead:'s-lead', partner:'s-partner', investor:'s-investor', vendor:'s-vendor' };
+
+  return `
+    <div class="metrics" style="grid-template-columns:repeat(4,1fr);">
+      <div class="metric"><div class="metric-label">Total contacts</div><div class="metric-value">${contacts.length}</div></div>
+      <div class="metric"><div class="metric-label">Investors</div><div class="metric-value">${contacts.filter(c=>c.status==='investor').length}</div></div>
+      <div class="metric"><div class="metric-label">Partners</div><div class="metric-value">${contacts.filter(c=>c.status==='partner').length}</div></div>
+      <div class="metric"><div class="metric-label">Leads</div><div class="metric-value">${contacts.filter(c=>c.status==='lead').length}</div></div>
+    </div>
+
+    <div class="section-header">
+      <span class="section-title">All contacts</span>
+      <button class="btn-add" onclick="toggleContactAdd()">+ Add contact</button>
+    </div>
+
+    <div id="contact-add-row" style="display:none;">
+      <div class="add-row" style="flex-wrap:wrap;">
+        <input type="text" id="c-name" placeholder="Full name" />
+        <input type="text" id="c-role" placeholder="Role / title" />
+        <input type="text" id="c-company" placeholder="Company" />
+        <input type="email" id="c-email" placeholder="Email" />
+        <select id="c-status">
+          <option value="lead">Lead</option>
+          <option value="investor">Investor</option>
+          <option value="partner">Partner</option>
+          <option value="vendor">Vendor</option>
+        </select>
+        <button class="btn-primary" onclick="addContact()">Add</button>
+        <button class="btn-ghost" onclick="toggleContactAdd()">Cancel</button>
+      </div>
+    </div>
+
+    <div class="contact-grid">
+      ${contacts.map((c,i)=>{
+        const av = avatarColors[i % avatarColors.length];
+        return `<div class="contact-card">
+          <div class="contact-top">
+            <div class="c-avatar" style="background:${av.bg};color:${av.color};">${initials(c.name)}</div>
+            <div>
+              <div class="c-name">${esc(c.name)}</div>
+              <div class="c-role">${esc(c.role)}</div>
+            </div>
+          </div>
+          <div class="c-details">
+            <div class="c-detail-row">
+              <svg width="11" height="11" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="4" width="12" height="9" rx="1"/><path d="M2 4l6 5 6-5"/></svg>
+              ${esc(c.email)}
+            </div>
+            <div class="c-detail-row">
+              <svg width="11" height="11" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="2" width="10" height="12" rx="2"/><circle cx="8" cy="11" r="0.8" fill="currentColor"/></svg>
+              ${esc(c.company)}
+            </div>
+          </div>
+          <span class="status-pill ${statusClass[c.status]}">${statusLabels[c.status]}</span>
+        </div>`;
+      }).join('')}
+    </div>`;
+}
+
+function toggleContactAdd() {
+  const r = document.getElementById('contact-add-row');
+  if (!r) return;
+  const showing = r.style.display !== 'none';
+  r.style.display = showing ? 'none' : 'block';
+  if (!showing) document.getElementById('c-name').focus();
+}
+
+function addContact() {
+  const name = document.getElementById('c-name').value.trim();
+  if (!name) return;
+  contacts.push({
+    id: contactId++,
+    name,
+    role:    document.getElementById('c-role').value.trim() || '—',
+    company: document.getElementById('c-company').value.trim() || '—',
+    email:   document.getElementById('c-email').value.trim() || '—',
+    status:  document.getElementById('c-status').value,
+  });
+  save('contacts', contacts);
+  render();
+}
+
+// ── INIT ──
+document.getElementById('today-date').textContent = new Date().toLocaleDateString('en-US', {
+  weekday:'short', month:'short', day:'numeric', year:'numeric'
+});
+
+render();
+</script>
+</body>
+</html>
