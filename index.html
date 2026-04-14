@@ -176,6 +176,62 @@ body{font-family:var(--font-body);background:var(--bg);color:var(--text-1);displ
 .hnc-title{font-family:var(--font-display);font-size:16px;font-weight:500;color:var(--sand);}
 .hnc-desc{font-size:12px;color:var(--text-3);line-height:1.5;}
 .hnc-count{font-size:11px;color:#8FC4A8;margin-top:2px;}
+
+/* LOCATIONS */
+.loc-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:14px;margin-bottom:20px;}
+.loc-card{background:var(--bg-3);border:0.5px solid var(--border);border-radius:var(--radius-lg);padding:16px;transition:border-color 0.12s;position:relative;}
+.loc-card:hover{border-color:var(--border-teal);}
+.loc-card-top{display:flex;align-items:flex-start;justify-content:space-between;gap:8px;margin-bottom:10px;}
+.loc-name{font-family:var(--font-display);font-size:15px;font-weight:500;color:var(--sand);line-height:1.3;flex:1;}
+.loc-badge{font-size:10px;padding:2px 8px;border-radius:10px;font-weight:500;white-space:nowrap;flex-shrink:0;}
+.loc-shortlisted{background:rgba(61,81,72,0.35);color:#8FC4A8;border:0.5px solid rgba(61,81,72,0.6);}
+.loc-viewing{background:rgba(176,141,87,0.18);color:var(--brass-light);border:0.5px solid rgba(176,141,87,0.35);}
+.loc-rejected{background:rgba(192,112,74,0.18);color:#D4947A;border:0.5px solid rgba(192,112,74,0.35);}
+.loc-considering{background:rgba(45,70,80,0.35);color:#7AB8CC;border:0.5px solid rgba(45,70,80,0.6);}
+.loc-stats{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:10px;}
+.loc-stat{background:var(--surface);border-radius:var(--radius);padding:8px 10px;}
+.loc-stat-label{font-size:9px;color:var(--text-4);text-transform:uppercase;letter-spacing:0.07em;margin-bottom:2px;}
+.loc-stat-val{font-family:var(--font-display);font-size:14px;color:var(--sand);}
+.loc-total{background:linear-gradient(135deg,rgba(61,81,72,0.2),var(--surface));border:0.5px solid var(--border-teal);border-radius:var(--radius);padding:8px 10px;margin-bottom:10px;display:flex;align-items:center;justify-content:space-between;}
+.loc-total-label{font-size:10px;color:#8FC4A8;text-transform:uppercase;letter-spacing:0.06em;}
+.loc-total-val{font-family:var(--font-display);font-size:18px;color:var(--sand);}
+.loc-stars{display:flex;gap:3px;margin-bottom:8px;}
+.star{font-size:14px;cursor:pointer;color:var(--text-4);transition:color 0.1s;line-height:1;}
+.star.filled{color:var(--brass-light);}
+.loc-notes{font-size:11px;color:var(--text-3);line-height:1.55;margin-bottom:10px;white-space:pre-wrap;}
+.loc-pc{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:10px;}
+.loc-pc-box{background:var(--surface);border-radius:var(--radius);padding:8px 10px;}
+.loc-pc-label{font-size:9px;font-weight:500;text-transform:uppercase;letter-spacing:0.07em;margin-bottom:4px;}
+.loc-pc-label.pro{color:#5C9E7A;}
+.loc-pc-label.con{color:#C0704A;}
+.loc-pc-text{font-size:11px;color:var(--text-3);line-height:1.5;white-space:pre-wrap;}
+.loc-actions{display:flex;gap:6px;margin-top:4px;}
+.loc-action-btn{font-size:11px;font-family:var(--font-body);padding:4px 10px;background:none;border:0.5px solid var(--border);border-radius:var(--radius);color:var(--text-3);cursor:pointer;transition:all 0.12s;}
+.loc-action-btn:hover{background:var(--teal-faint);color:#8FC4A8;border-color:var(--border-teal);}
+.compare-table{width:100%;border-collapse:collapse;font-size:12px;margin-bottom:20px;}
+.compare-table th{text-align:left;padding:8px 12px;background:var(--teal-faint);color:#8FC4A8;font-size:10px;text-transform:uppercase;letter-spacing:0.07em;font-weight:500;border:0.5px solid var(--border-teal);}
+.compare-table td{padding:9px 12px;border:0.5px solid var(--border);color:var(--text-2);vertical-align:top;}
+.compare-table tr:nth-child(even) td{background:var(--bg-3);}
+.compare-table tr:nth-child(odd) td{background:var(--bg-2);}
+.compare-table td:first-child{font-weight:500;color:var(--text-1);}
+.loc-view-toggle{display:flex;gap:6px;align-items:center;}
+.view-btn{font-size:11px;font-family:var(--font-body);padding:4px 10px;background:none;border:0.5px solid var(--border);border-radius:var(--radius);color:var(--text-3);cursor:pointer;transition:all 0.12s;}
+.view-btn.active{background:var(--teal-faint2);color:#8FC4A8;border-color:var(--border-teal);}
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.65);z-index:100;display:flex;align-items:center;justify-content:center;padding:20px;}
+.modal{background:var(--bg-2);border:0.5px solid var(--border-teal);border-radius:var(--radius-lg);padding:24px;width:100%;max-width:560px;max-height:90vh;overflow-y:auto;}
+.modal-title{font-family:var(--font-display);font-size:18px;font-weight:500;color:var(--sand);margin-bottom:18px;}
+.modal-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;}
+.modal-field{display:flex;flex-direction:column;gap:5px;}
+.modal-field.full{grid-column:1/-1;}
+.modal-label{font-size:10px;color:var(--text-3);text-transform:uppercase;letter-spacing:0.07em;}
+.modal-input{font-size:13px;font-family:var(--font-body);padding:8px 12px;border:0.5px solid var(--border-teal);border-radius:var(--radius);background:var(--surface);color:var(--text-1);outline:none;width:100%;}
+.modal-input:focus{border-color:var(--teal-light);}
+.modal-textarea{font-size:12px;font-family:var(--font-body);padding:8px 12px;border:0.5px solid var(--border-teal);border-radius:var(--radius);background:var(--surface);color:var(--text-1);outline:none;width:100%;resize:vertical;min-height:60px;line-height:1.5;}
+.modal-textarea:focus{border-color:var(--teal-light);}
+.modal-actions{display:flex;gap:8px;justify-content:flex-end;margin-top:16px;}
+.price-mode-toggle{display:flex;gap:6px;margin-bottom:10px;}
+.pm-btn{font-size:11px;font-family:var(--font-body);padding:4px 10px;background:none;border:0.5px solid var(--border);border-radius:var(--radius);color:var(--text-3);cursor:pointer;transition:all 0.12s;}
+.pm-btn.active{background:var(--teal-faint2);color:#8FC4A8;border-color:var(--border-teal);}
 ::-webkit-scrollbar{width:5px;}
 ::-webkit-scrollbar-track{background:transparent;}
 ::-webkit-scrollbar-thumb{background:var(--surface-2);border-radius:10px;}
@@ -207,6 +263,10 @@ body{font-family:var(--font-body);background:var(--bg);color:var(--text-1);displ
   <div class="nav-item" onclick="nav('crm',this)">
     <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="6" cy="5" r="2.5"/><path d="M2 13c0-2.2 1.8-4 4-4s4 1.8 4 4"/><circle cx="12" cy="5" r="2"/><path d="M12 9c1.7 0 3 1.3 3 3"/></svg>Contacts & CRM
   </div>
+  <div class="nav-item" onclick="nav('locations',this)">
+    <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M8 1.5C5.5 1.5 3.5 3.5 3.5 6c0 3.5 4.5 8.5 4.5 8.5s4.5-5 4.5-8.5c0-2.5-2-4.5-4.5-4.5z"/><circle cx="8" cy="6" r="1.5"/></svg>
+    Space Scouting
+  </div>
   <div class="sidebar-footer">
     <div class="user-avatar">SK</div>
     <div><div class="user-name">Sukoon Team</div><div class="user-role">Founders</div></div>
@@ -229,7 +289,8 @@ const SUPABASE_URL='https://decufrbbajkqoatdeoov.supabase.co';
 const SUPABASE_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRlY3VmcmJiYWprcW9hdGRlb292Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzYxMzg5MzQsImV4cCI6MjA5MTcxNDkzNH0.KBRpEcV6umHc17bJW7eqeq53FDfW57fTgezn_vgJDJk';
 const sb=supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
 
-let tasks=[],okrs=[],krMap={},budgetTotal=0,budgetItems=[],contacts=[],budgetRowId=null;
+let tasks=[],okrs=[],krMap={},budgetTotal=0,budgetItems=[],contacts=[],locations=[],budgetRowId=null;
+let locView='cards',editingLocId=null;
 let currentPage='home';
 
 function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
@@ -243,7 +304,7 @@ const statusLabels={lead:'Lead',partner:'Partner',investor:'Investor',vendor:'Ve
 const statusClass={lead:'s-lead',partner:'s-partner',investor:'s-investor',vendor:'s-vendor',customer:'s-customer'};
 const termLabels={short:'Short-term',medium:'Medium-term',long:'Long-term'};
 const termClass={short:'term-short',medium:'term-medium',long:'term-long'};
-const pageTitles={home:'Home',tasks:'Tasks',okr:'Goals & OKRs',budget:'Budget Planner',crm:'Contacts & CRM'};
+const pageTitles={home:'Home',tasks:'Tasks',okr:'Goals & OKRs',budget:'Budget Planner',crm:'Contacts & CRM',locations:'Space Scouting'};
 
 async function loadAll(){
   try{
@@ -254,6 +315,7 @@ async function loadAll(){
       sb.from('budget').select('*').limit(1).single(),
       sb.from('budget_items').select('*').order('created_at'),
       sb.from('contacts').select('*').order('created_at'),
+      sb.from('locations').select('*').order('created_at'),
     ]);
     tasks=t.data||[];
     okrs=o.data||[];
@@ -262,6 +324,8 @@ async function loadAll(){
     budgetTotal=b.data?.total_budget||0;
     budgetItems=bi.data||[];
     contacts=c.data||[];
+    const loc=await sb.from('locations').select('*').order('created_at');
+    locations=loc.data||[];
     render();
   }catch(e){setSyncing('error');console.error(e);}
 }
@@ -274,6 +338,7 @@ function subscribeRealtime(){
     .on('postgres_changes',{event:'*',schema:'public',table:'budget'},()=>reload('budget'))
     .on('postgres_changes',{event:'*',schema:'public',table:'budget_items'},()=>reload('budget_items'))
     .on('postgres_changes',{event:'*',schema:'public',table:'contacts'},()=>reload('contacts'))
+    .on('postgres_changes',{event:'*',schema:'public',table:'locations'},()=>reload('locations'))
     .subscribe();
 }
 
@@ -284,6 +349,7 @@ async function reload(table){
   if(table==='budget'){const{data}=await sb.from('budget').select('*').limit(1).single();budgetRowId=data?.id||null;budgetTotal=data?.total_budget||0;}
   if(table==='budget_items'){const{data}=await sb.from('budget_items').select('*').order('created_at');budgetItems=data||[];}
   if(table==='contacts'){const{data}=await sb.from('contacts').select('*').order('created_at');contacts=data||[];}
+  if(table==='locations'){const{data}=await sb.from('locations').select('*').order('created_at');locations=data||[];}
   render();
 }
 
@@ -303,6 +369,7 @@ function render(){
   if(currentPage==='okr')c.innerHTML=renderOKR();
   if(currentPage==='budget')c.innerHTML=renderBudget();
   if(currentPage==='crm')c.innerHTML=renderCRM();
+  if(currentPage==='locations')c.innerHTML=renderLocations();
 }
 
 function updateBadges(){const el=document.getElementById('nb-tasks');if(el)el.textContent=tasks.filter(t=>!t.done).length;}
@@ -336,6 +403,7 @@ function renderHome(){
       <div class="home-nav-card" onclick="nav('okr',document.querySelectorAll('.nav-item')[2])"><div class="hnc-icon" style="background:rgba(61,81,72,0.2);"><svg width="18" height="18" viewBox="0 0 16 16" fill="none" stroke="#8FC4A8" stroke-width="1.5"><circle cx="8" cy="8" r="6"/><circle cx="8" cy="8" r="3"/><circle cx="8" cy="8" r="1" fill="#8FC4A8"/></svg></div><div class="hnc-title">Goals & OKRs</div><div class="hnc-desc">Set short, medium, and long-term objectives with trackable key results.</div><div class="hnc-count">${okrs.length} objectives &middot; ${avgOkr}% avg progress</div></div>
       <div class="home-nav-card" onclick="nav('budget',document.querySelectorAll('.nav-item')[3])"><div class="hnc-icon" style="background:rgba(61,81,72,0.2);"><svg width="18" height="18" viewBox="0 0 16 16" fill="none" stroke="#8FC4A8" stroke-width="1.5"><path d="M2 4h12v8H2z"/><path d="M5 4V3a1 1 0 011-1h4a1 1 0 011 1v1"/><path d="M8 8v.01"/></svg></div><div class="hnc-title">Budget Planner</div><div class="hnc-desc">Allocate your total budget across categories and line items.</div><div class="hnc-count">&#8369;${fmt(rem)} remaining</div></div>
       <div class="home-nav-card" onclick="nav('crm',document.querySelectorAll('.nav-item')[4])"><div class="hnc-icon" style="background:rgba(61,81,72,0.2);"><svg width="18" height="18" viewBox="0 0 16 16" fill="none" stroke="#8FC4A8" stroke-width="1.5"><circle cx="6" cy="5" r="2.5"/><path d="M2 13c0-2.2 1.8-4 4-4s4 1.8 4 4"/><circle cx="12" cy="5" r="2"/><path d="M12 9c1.7 0 3 1.3 3 3"/></svg></div><div class="hnc-title">Contacts & CRM</div><div class="hnc-desc">Track investors, partners, customers, vendors, and leads.</div><div class="hnc-count">${contacts.length} contacts</div></div>
+      <div class="home-nav-card" onclick="nav('locations',document.querySelectorAll('.nav-item')[5])"><div class="hnc-icon" style="background:rgba(61,81,72,0.2);"><svg width="18" height="18" viewBox="0 0 16 16" fill="none" stroke="#8FC4A8" stroke-width="1.5"><path d="M8 1.5C5.5 1.5 3.5 3.5 3.5 6c0 3.5 4.5 8.5 4.5 8.5s4.5-5 4.5-8.5c0-2.5-2-4.5-4.5-4.5z"/><circle cx="8" cy="6" r="1.5"/></svg></div><div class="hnc-title">Space Scouting</div><div class="hnc-desc">Compare retail locations, track pricing, and shortlist your top spots.</div><div class="hnc-count">${locations.length} locations tracked</div></div>
     </div>
     <div class="section-header"><span class="section-title">Today's priorities</span></div>
     <div style="display:flex;flex-direction:column;gap:5px;">
@@ -526,6 +594,185 @@ async function addContact(){const name=document.getElementById('c-name').value.t
 async function deleteContact(id){setSyncing('syncing');await sb.from('contacts').delete().eq('id',id);await reload('contacts');setSyncing('ok');}
 
 document.getElementById('today-date').textContent=new Date().toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric',year:'numeric'});
+
+// ── LOCATIONS ──
+const locStatusLabels={shortlisted:'Shortlisted',viewing:'Viewing Scheduled',considering:'Considering',rejected:'Rejected'};
+const locStatusClass={shortlisted:'loc-shortlisted',viewing:'loc-viewing',considering:'loc-considering',rejected:'loc-rejected'};
+
+function renderLocations(){
+  const avgRating=locations.length?Math.round(locations.filter(l=>l.rating>0).reduce((a,l)=>a+l.rating,0)/(locations.filter(l=>l.rating>0).length||1)*10)/10:0;
+  const shortlisted=locations.filter(l=>l.status==='shortlisted').length;
+  const minRent=locations.length?Math.min(...locations.filter(l=>l.total_monthly>0).map(l=>l.total_monthly)):0;
+  return `
+    <div class="metrics" style="grid-template-columns:repeat(4,1fr);">
+      <div class="metric teal-accent"><div class="metric-label">Locations tracked</div><div class="metric-value">${locations.length}</div></div>
+      <div class="metric teal-accent"><div class="metric-label">Shortlisted</div><div class="metric-value">${shortlisted}</div><div class="metric-sub good">top picks</div></div>
+      <div class="metric teal-accent"><div class="metric-label">Avg rating</div><div class="metric-value">${avgRating||'—'}</div><div class="metric-sub">out of 5</div></div>
+      <div class="metric teal-accent"><div class="metric-label">Lowest monthly</div><div class="metric-value">${minRent?'&#8369;'+fmt(minRent):'—'}</div></div>
+    </div>
+    <div class="section-header">
+      <span class="section-title">Locations</span>
+      <div style="display:flex;gap:8px;align-items:center;">
+        <div class="loc-view-toggle">
+          <button class="view-btn${locView==='cards'?' active':''}" onclick="setLocView('cards')">Cards</button>
+          <button class="view-btn${locView==='compare'?' active':''}" onclick="setLocView('compare')">Compare</button>
+        </div>
+        <button class="btn-add" onclick="openLocModal(null)">+ Add location</button>
+      </div>
+    </div>
+    ${locView==='cards'?renderLocCards():renderLocCompare()}
+  `;
+}
+
+function renderLocCards(){
+  if(!locations.length)return'<div class="empty" style="padding:32px 0;">No locations yet. Add one above.</div>';
+  return`<div class="loc-grid">${locations.map(l=>`
+    <div class="loc-card">
+      <div style="position:absolute;top:10px;right:10px;display:flex;gap:4px;">
+        <button class="loc-action-btn" onclick="openLocModal('${l.id}')">Edit</button>
+        <button class="btn-del" onclick="deleteLoc('${l.id}')">&#x2715;</button>
+      </div>
+      <div class="loc-card-top">
+        <div class="loc-name">${esc(l.name)}</div>
+        <span class="loc-badge ${locStatusClass[l.status]||''}">${locStatusLabels[l.status]||l.status}</span>
+      </div>
+      ${l.area?`<div style="font-size:11px;color:var(--text-3);margin-bottom:8px;">&#128205; ${esc(l.area)}</div>`:''}
+      <div class="loc-stars">${[1,2,3,4,5].map(n=>`<span class="star${(l.rating||0)>=n?' filled':''}">${(l.rating||0)>=n?'&#9733;':'&#9734;'}</span>`).join('')}</div>
+      <div class="loc-stats">
+        <div class="loc-stat"><div class="loc-stat-label">Size</div><div class="loc-stat-val">${l.size_sqm?l.size_sqm+' sqm':'—'}</div></div>
+        <div class="loc-stat"><div class="loc-stat-label">Rent / sqm</div><div class="loc-stat-val">${l.rent_per_sqm?'&#8369;'+fmt(l.rent_per_sqm):'—'}</div></div>
+        <div class="loc-stat"><div class="loc-stat-label">CUSA / sqm</div><div class="loc-stat-val">${l.cusa_per_sqm?'&#8369;'+fmt(l.cusa_per_sqm):'—'}</div></div>
+        <div class="loc-stat"><div class="loc-stat-label">Flat rent</div><div class="loc-stat-val">${l.flat_rent?'&#8369;'+fmt(l.flat_rent):'—'}</div></div>
+      </div>
+      <div class="loc-total"><span class="loc-total-label">Total / month</span><span class="loc-total-val">&#8369;${fmt(l.total_monthly||0)}</span></div>
+      ${(l.pros||l.cons)?`<div class="loc-pc">
+        ${l.pros?`<div class="loc-pc-box"><div class="loc-pc-label pro">Pros</div><div class="loc-pc-text">${esc(l.pros)}</div></div>`:''}
+        ${l.cons?`<div class="loc-pc-box"><div class="loc-pc-label con">Cons</div><div class="loc-pc-text">${esc(l.cons)}</div></div>`:''}
+      </div>`:''}
+      ${l.notes?`<div class="loc-notes">${esc(l.notes)}</div>`:''}
+    </div>`).join('')}</div>`;
+}
+
+function renderLocCompare(){
+  if(!locations.length)return'<div class="empty" style="padding:32px 0;">No locations to compare yet.</div>';
+  return`<div style="overflow-x:auto;"><table class="compare-table">
+    <thead><tr>
+      <th>Location</th><th>Status</th><th>Size</th><th>Rent/sqm</th><th>CUSA/sqm</th><th>Flat rent</th><th>Total/month</th><th>Rating</th>
+    </tr></thead>
+    <tbody>${locations.map(l=>`<tr>
+      <td>${esc(l.name)}<br><span style="font-size:10px;color:var(--text-4);">${esc(l.area||'')}</span></td>
+      <td><span class="loc-badge ${locStatusClass[l.status]||''}">${locStatusLabels[l.status]||l.status}</span></td>
+      <td>${l.size_sqm?l.size_sqm+' sqm':'—'}</td>
+      <td>${l.rent_per_sqm?'&#8369;'+fmt(l.rent_per_sqm):'—'}</td>
+      <td>${l.cusa_per_sqm?'&#8369;'+fmt(l.cusa_per_sqm):'—'}</td>
+      <td>${l.flat_rent?'&#8369;'+fmt(l.flat_rent):'—'}</td>
+      <td style="color:#8FC4A8;font-family:var(--font-display);font-size:14px;">&#8369;${fmt(l.total_monthly||0)}</td>
+      <td>${[1,2,3,4,5].map(n=>`<span style="color:${(l.rating||0)>=n?'var(--brass-light)':'var(--text-4)'};font-size:12px;">${(l.rating||0)>=n?'&#9733;':'&#9734;'}</span>`).join('')}</td>
+    </tr>`).join('')}</tbody>
+  </table></div>`;
+}
+
+function setLocView(v){locView=v;render();}
+
+function calcTotal(sizeSqm,rentPerSqm,cusaPerSqm,flatRent){
+  const perSqmTotal=(parseFloat(rentPerSqm)||0)+(parseFloat(cusaPerSqm)||0);
+  const perSqmMonthly=perSqmTotal*(parseFloat(sizeSqm)||0);
+  const flat=parseFloat(flatRent)||0;
+  return Math.round(perSqmMonthly+flat);
+}
+
+function openLocModal(id){
+  const l=id?locations.find(x=>x.id===id):null;
+  editingLocId=id||null;
+  const overlay=document.createElement('div');
+  overlay.className='modal-overlay';
+  overlay.id='loc-modal';
+  overlay.innerHTML=`<div class="modal">
+    <div class="modal-title">${l?'Edit location':'Add location'}</div>
+    <div class="modal-grid">
+      <div class="modal-field full"><div class="modal-label">Location name / address</div><input autocomplete="off" class="modal-input" id="lf-name" placeholder="e.g. Unit 4B, The Bench BGC" value="${esc(l?.name||'')}" /></div>
+      <div class="modal-field full"><div class="modal-label">Area / neighborhood</div><input autocomplete="off" class="modal-input" id="lf-area" placeholder="e.g. BGC, Taguig" value="${esc(l?.area||'')}" /></div>
+      <div class="modal-field"><div class="modal-label">Status</div>
+        <select class="modal-input" id="lf-status">
+          <option value="considering" ${(l?.status||'considering')==='considering'?'selected':''}>Considering</option>
+          <option value="viewing" ${l?.status==='viewing'?'selected':''}>Viewing Scheduled</option>
+          <option value="shortlisted" ${l?.status==='shortlisted'?'selected':''}>Shortlisted</option>
+          <option value="rejected" ${l?.status==='rejected'?'selected':''}>Rejected</option>
+        </select>
+      </div>
+      <div class="modal-field"><div class="modal-label">Rating (1–5)</div>
+        <select class="modal-input" id="lf-rating">
+          ${[0,1,2,3,4,5].map(n=>`<option value="${n}" ${(l?.rating||0)===n?'selected':''}>${n===0?'No rating':n+' star'+(n>1?'s':'')}</option>`).join('')}
+        </select>
+      </div>
+      <div class="modal-field"><div class="modal-label">Size (sqm)</div><input autocomplete="off" type="number" class="modal-input" id="lf-size" placeholder="e.g. 80" value="${l?.size_sqm||''}" oninput="updateLocTotal()" /></div>
+      <div class="modal-field"></div>
+      <div class="modal-field"><div class="modal-label">Rent per sqm (&#8369;)</div><input autocomplete="off" type="number" class="modal-input" id="lf-rent-sqm" placeholder="e.g. 900" value="${l?.rent_per_sqm||''}" oninput="updateLocTotal()" /></div>
+      <div class="modal-field"><div class="modal-label">CUSA per sqm (&#8369;)</div><input autocomplete="off" type="number" class="modal-input" id="lf-cusa-sqm" placeholder="e.g. 150" value="${l?.cusa_per_sqm||''}" oninput="updateLocTotal()" /></div>
+      <div class="modal-field full"><div class="modal-label">Flat monthly rent (&#8369;) &mdash; if not per sqm</div><input autocomplete="off" type="number" class="modal-input" id="lf-flat" placeholder="e.g. 45000" value="${l?.flat_rent||''}" oninput="updateLocTotal()" /></div>
+      <div class="modal-field full">
+        <div class="loc-total" style="margin-bottom:0;">
+          <span class="loc-total-label">Estimated total / month</span>
+          <span class="loc-total-val" id="lf-total">&#8369;${fmt(l?.total_monthly||0)}</span>
+        </div>
+      </div>
+      <div class="modal-field full"><div class="modal-label">Pros</div><textarea autocomplete="off" class="modal-textarea" id="lf-pros" placeholder="What's good about this space...">${esc(l?.pros||'')}</textarea></div>
+      <div class="modal-field full"><div class="modal-label">Cons</div><textarea autocomplete="off" class="modal-textarea" id="lf-cons" placeholder="Any concerns or downsides...">${esc(l?.cons||'')}</textarea></div>
+      <div class="modal-field full"><div class="modal-label">Notes</div><textarea autocomplete="off" class="modal-textarea" id="lf-notes" placeholder="Additional notes, contact info, viewing dates...">${esc(l?.notes||'')}</textarea></div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-ghost" onclick="closeLocModal()">Cancel</button>
+      <button class="btn-primary" onclick="saveLoc()">Save location</button>
+    </div>
+  </div>`;
+  document.body.appendChild(overlay);
+  overlay.addEventListener('click',e=>{if(e.target===overlay)closeLocModal();});
+}
+
+function updateLocTotal(){
+  const size=document.getElementById('lf-size')?.value;
+  const rent=document.getElementById('lf-rent-sqm')?.value;
+  const cusa=document.getElementById('lf-cusa-sqm')?.value;
+  const flat=document.getElementById('lf-flat')?.value;
+  const total=calcTotal(size,rent,cusa,flat);
+  const el=document.getElementById('lf-total');
+  if(el)el.innerHTML='&#8369;'+fmt(total);
+}
+
+function closeLocModal(){const m=document.getElementById('loc-modal');if(m)m.remove();editingLocId=null;}
+
+async function saveLoc(){
+  const name=document.getElementById('lf-name').value.trim();if(!name)return;
+  const size=parseFloat(document.getElementById('lf-size').value)||null;
+  const rentSqm=parseFloat(document.getElementById('lf-rent-sqm').value)||null;
+  const cusaSqm=parseFloat(document.getElementById('lf-cusa-sqm').value)||null;
+  const flat=parseFloat(document.getElementById('lf-flat').value)||null;
+  const total=calcTotal(size,rentSqm,cusaSqm,flat);
+  const payload={
+    name,
+    area:document.getElementById('lf-area').value.trim()||null,
+    status:document.getElementById('lf-status').value,
+    rating:parseInt(document.getElementById('lf-rating').value)||0,
+    size_sqm:size,
+    rent_per_sqm:rentSqm,
+    cusa_per_sqm:cusaSqm,
+    flat_rent:flat,
+    total_monthly:total,
+    pros:document.getElementById('lf-pros').value.trim()||null,
+    cons:document.getElementById('lf-cons').value.trim()||null,
+    notes:document.getElementById('lf-notes').value.trim()||null,
+  };
+  setSyncing('syncing');
+  if(editingLocId){await sb.from('locations').update(payload).eq('id',editingLocId);}
+  else{await sb.from('locations').insert(payload);}
+  await reload('locations');
+  setSyncing('ok');
+  closeLocModal();
+}
+
+async function deleteLoc(id){setSyncing('syncing');await sb.from('locations').delete().eq('id',id);await reload('locations');setSyncing('ok');}
+
+
 loadAll().then(()=>subscribeRealtime());
 </script>
 </body>
