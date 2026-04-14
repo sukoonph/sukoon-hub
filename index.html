@@ -711,9 +711,18 @@ function openLocModal(id){
       <div class="modal-field"><div class="modal-label">CUSA per sqm (&#8369;)</div><input autocomplete="off" type="number" class="modal-input" id="lf-cusa-sqm" placeholder="e.g. 150" value="${l?.cusa_per_sqm||''}" oninput="updateLocTotal()" /></div>
       <div class="modal-field full"><div class="modal-label">Flat monthly rent (&#8369;) &mdash; if not per sqm</div><input autocomplete="off" type="number" class="modal-input" id="lf-flat" placeholder="e.g. 45000" value="${l?.flat_rent||''}" oninput="updateLocTotal()" /></div>
       <div class="modal-field full">
-        <div class="loc-total" style="margin-bottom:0;">
-          <span class="loc-total-label">Estimated total / month</span>
-          <span class="loc-total-val" id="lf-total">&#8369;${fmt(l?.total_monthly||0)}</span>
+        <div class="loc-total" style="margin-bottom:0;flex-direction:column;gap:8px;">
+          <div style="display:flex;align-items:center;justify-content:space-between;">
+            <span class="loc-total-label">Estimated total / month</span>
+            <span class="loc-total-val" id="lf-total">&#8369;${fmt(l?.total_monthly||0)}</span>
+          </div>
+          <div style="display:flex;align-items:center;justify-content:space-between;padding-top:8px;border-top:0.5px solid var(--border-teal);">
+            <div style="display:flex;align-items:center;gap:8px;">
+              <span style="font-size:10px;color:var(--text-3);text-transform:uppercase;letter-spacing:0.07em;">+ 12% VAT</span>
+              <button type="button" id="vat-toggle" onclick="toggleVAT()" style="font-size:11px;font-family:var(--font-body);padding:3px 12px;border-radius:20px;border:0.5px solid var(--border-teal);background:none;color:var(--text-3);cursor:pointer;transition:all 0.12s;" data-on="${l?.vat_included?'true':'false'}">${l?.vat_included?'<span style=\'color:#8FC4A8;\'>On</span>':'Off'}</button>
+            </div>
+            <span style="font-size:13px;font-family:var(--font-display);color:var(--text-3);" id="lf-total-vat">${l?.vat_included&&l?.total_monthly?'&#8369;'+fmt(Math.round(l.total_monthly*1.12)):''}</span>
+          </div>
         </div>
       </div>
       <div class="modal-field full"><div class="modal-label">Pros</div><textarea autocomplete="off" class="modal-textarea" id="lf-pros" placeholder="What's good about this space...">${esc(l?.pros||'')}</textarea></div>
@@ -737,6 +746,37 @@ function updateLocTotal(){
   const total=calcTotal(size,rent,cusa,flat);
   const el=document.getElementById('lf-total');
   if(el)el.innerHTML='&#8369;'+fmt(total);
+  const vatBtn=document.getElementById('vat-toggle');
+  const vatEl=document.getElementById('lf-total-vat');
+  if(vatEl&&vatBtn&&vatBtn.dataset.on==='true'){
+    vatEl.innerHTML='&#8369;'+fmt(Math.round(total*1.12));
+  }
+}
+
+function toggleVAT(){
+  const btn=document.getElementById('vat-toggle');
+  const vatEl=document.getElementById('lf-total-vat');
+  const totalEl=document.getElementById('lf-total');
+  if(!btn||!vatEl||!totalEl)return;
+  const isOn=btn.dataset.on==='true';
+  btn.dataset.on=isOn?'false':'true';
+  if(isOn){
+    btn.innerHTML='Off';
+    btn.style.color='var(--text-3)';
+    btn.style.background='none';
+    btn.style.borderColor='var(--border-teal)';
+    vatEl.innerHTML='';
+  } else {
+    btn.innerHTML='<span style="color:#8FC4A8;">On</span>';
+    btn.style.background='rgba(61,81,72,0.2)';
+    btn.style.borderColor='rgba(61,81,72,0.6)';
+    const size=document.getElementById('lf-size')?.value;
+    const rent=document.getElementById('lf-rent-sqm')?.value;
+    const cusa=document.getElementById('lf-cusa-sqm')?.value;
+    const flat=document.getElementById('lf-flat')?.value;
+    const total=calcTotal(size,rent,cusa,flat);
+    vatEl.innerHTML='&#8369;'+fmt(Math.round(total*1.12));
+  }
 }
 
 function closeLocModal(){const m=document.getElementById('loc-modal');if(m)m.remove();editingLocId=null;}
@@ -748,6 +788,7 @@ async function saveLoc(){
   const cusaSqm=parseFloat(document.getElementById('lf-cusa-sqm').value)||null;
   const flat=parseFloat(document.getElementById('lf-flat').value)||null;
   const total=calcTotal(size,rentSqm,cusaSqm,flat);
+  const vatOn=document.getElementById('vat-toggle')?.dataset.on==='true';
   const payload={
     name,
     area:document.getElementById('lf-area').value.trim()||null,
@@ -757,7 +798,8 @@ async function saveLoc(){
     rent_per_sqm:rentSqm,
     cusa_per_sqm:cusaSqm,
     flat_rent:flat,
-    total_monthly:total,
+    total_monthly:vatOn?Math.round(total*1.12):total,
+    vat_included:vatOn,
     pros:document.getElementById('lf-pros').value.trim()||null,
     cons:document.getElementById('lf-cons').value.trim()||null,
     notes:document.getElementById('lf-notes').value.trim()||null,
