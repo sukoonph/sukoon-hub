@@ -5,271 +5,183 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Sukoon — Internal Hub</title>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-:root {
-  --brass:       #B08D57;
-  --brass-light: #C9A96E;
-  --brass-dark:  #8A6D3F;
-  --teal:        #3D5148;
-  --teal-light:  #4E6659;
-  --teal-dark:   #2C3C35;
-  --teal-faint:  rgba(61,81,72,0.18);
-  --teal-faint2: rgba(61,81,72,0.28);
-  --walnut:      #996B48;
-  --sand:        #D6C6AE;
-  --sand-light:  #EDE3D4;
-  --sand-dark:   #C4B095;
-
-  --bg:          #181614;
-  --bg-2:        #1F1C18;
-  --bg-3:        #272320;
-  --surface:     #2E2A26;
-  --surface-2:   #373228;
-
-  --text-1:      #EDE3D4;
-  --text-2:      #C4B095;
-  --text-3:      #8A7D6A;
-  --text-4:      #574E43;
-
-  --border:      rgba(176,141,87,0.13);
-  --border-2:    rgba(176,141,87,0.24);
-  --border-teal: rgba(61,81,72,0.5);
-
-  --radius:    8px;
-  --radius-lg: 12px;
-
-  --font-display: 'Cormorant Garamond', serif;
-  --font-body:    'DM Sans', sans-serif;
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --brass:#B08D57;--brass-light:#C9A96E;--brass-dark:#8A6D3F;
+  --teal:#3D5148;--teal-light:#4E6659;--teal-dark:#2C3C35;
+  --teal-faint:rgba(61,81,72,0.18);--teal-faint2:rgba(61,81,72,0.28);
+  --sand:#D6C6AE;--sand-light:#EDE3D4;--sand-dark:#C4B095;
+  --bg:#181614;--bg-2:#1F1C18;--bg-3:#272320;--surface:#2E2A26;--surface-2:#373228;
+  --text-1:#EDE3D4;--text-2:#C4B095;--text-3:#8A7D6A;--text-4:#574E43;
+  --border:rgba(176,141,87,0.13);--border-2:rgba(176,141,87,0.24);--border-teal:rgba(61,81,72,0.5);
+  --radius:8px;--radius-lg:12px;
+  --font-display:'Cormorant Garamond',serif;--font-body:'DM Sans',sans-serif;
 }
-
-html, body { height: 100%; }
-body {
-  font-family: var(--font-body);
-  background: var(--bg);
-  color: var(--text-1);
-  display: flex;
-  height: 100vh;
-  overflow: hidden;
-}
-
-/* SIDEBAR */
-.sidebar {
-  width: 224px; flex-shrink: 0;
-  background: var(--bg-2);
-  border-right: 0.5px solid var(--border);
-  display: flex; flex-direction: column;
-  height: 100vh; overflow-y: auto;
-  box-shadow: inset -1px 0 0 rgba(61,81,72,0.3);
-}
-.sidebar-brand {
-  padding: 20px 18px 16px;
-  border-bottom: 0.5px solid var(--border);
-  background: linear-gradient(135deg, rgba(61,81,72,0.15) 0%, transparent 100%);
-}
-.brand-mark { display: flex; align-items: center; gap: 10px; }
-.brand-icon {
-  width: 34px; height: 34px; border-radius: 8px;
-  background: linear-gradient(135deg, var(--teal) 0%, var(--brass-dark) 100%);
-  display: flex; align-items: center; justify-content: center;
-  font-family: var(--font-display); font-size: 17px; font-weight: 600; color: var(--sand-light);
-}
-.brand-name { font-family: var(--font-display); font-size: 19px; font-weight: 600; color: var(--sand); letter-spacing: 0.04em; }
-.brand-sub  { font-size: 10px; color: var(--text-3); margin-top: 1px; letter-spacing: 0.06em; text-transform: uppercase; }
-
-.nav-section { font-size: 9px; font-weight: 500; color: var(--text-4); text-transform: uppercase; letter-spacing: 0.1em; padding: 16px 18px 6px; }
-
-.nav-item {
-  display: flex; align-items: center; gap: 9px;
-  padding: 8px 14px; margin: 1px 8px;
-  border-radius: var(--radius); cursor: pointer; font-size: 13px;
-  color: var(--text-3); transition: all 0.14s; user-select: none;
-}
-.nav-item:hover { background: var(--teal-faint); color: var(--text-2); }
-.nav-item.active { background: var(--teal-faint2); color: #8FC4A8; font-weight: 500; border: 0.5px solid var(--border-teal); }
-.nav-icon { width: 15px; height: 15px; opacity: 0.65; flex-shrink: 0; }
-.nav-item.active .nav-icon { opacity: 1; }
-.nav-badge { margin-left: auto; background: var(--teal-faint2); color: #8FC4A8; font-size: 10px; padding: 1px 6px; border-radius: 10px; }
-
-.sidebar-footer {
-  margin-top: auto; padding: 14px 18px;
-  border-top: 0.5px solid var(--border-teal);
-  display: flex; align-items: center; gap: 9px;
-  background: var(--teal-faint);
-}
-.user-avatar { width: 28px; height: 28px; border-radius: 50%; background: var(--teal); display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 500; color: var(--sand); flex-shrink: 0; }
-.user-name { font-size: 12px; color: var(--text-2); }
-.user-role { font-size: 10px; color: var(--text-4); }
-
-/* MAIN */
-.main { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
-.topbar {
-  display: flex; align-items: center; justify-content: space-between;
-  padding: 0 24px; height: 52px;
-  border-bottom: 0.5px solid var(--border-teal);
-  background: linear-gradient(90deg, rgba(61,81,72,0.12) 0%, var(--bg-2) 40%);
-  flex-shrink: 0;
-}
-.topbar-title { font-family: var(--font-display); font-size: 21px; font-weight: 500; color: var(--sand); letter-spacing: 0.02em; }
-.date-chip { font-size: 11px; color: var(--text-3); background: var(--teal-faint); border: 0.5px solid var(--border-teal); border-radius: 20px; padding: 4px 12px; }
-.content { flex: 1; overflow-y: auto; padding: 24px; }
-
-/* SHARED */
-.metrics { display: grid; grid-template-columns: repeat(4,1fr); gap: 10px; margin-bottom: 22px; }
-.metric { background: var(--bg-3); border: 0.5px solid var(--border); border-radius: var(--radius-lg); padding: 16px; }
-.metric.teal-accent { border-color: var(--border-teal); background: linear-gradient(135deg, rgba(61,81,72,0.14), var(--bg-3)); }
-.metric-label { font-size: 10px; color: var(--text-3); text-transform: uppercase; letter-spacing: 0.07em; margin-bottom: 8px; }
-.metric-value { font-family: var(--font-display); font-size: 28px; font-weight: 500; color: var(--sand); line-height: 1; }
-.metric-sub { font-size: 11px; color: var(--text-4); margin-top: 4px; }
-.metric-sub.good { color: #5C9E7A; }
-.metric-sub.warn { color: #C0704A; }
-
-.section-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
-.section-title { font-family: var(--font-display); font-size: 16px; font-weight: 500; color: var(--sand); letter-spacing: 0.02em; }
-
-.btn-add { display: flex; align-items: center; gap: 5px; font-size: 12px; font-family: var(--font-body); color: #8FC4A8; background: var(--teal-faint); border: 0.5px solid var(--border-teal); border-radius: var(--radius); padding: 5px 12px; cursor: pointer; transition: all 0.12s; }
-.btn-add:hover { background: var(--teal-faint2); }
-
-.card { background: var(--bg-3); border: 0.5px solid var(--border); border-radius: var(--radius-lg); padding: 18px; }
-
-.add-row { display: flex; gap: 8px; margin-bottom: 14px; flex-wrap: wrap; animation: slideDown 0.15s ease; }
-@keyframes slideDown { from { opacity:0; transform:translateY(-6px); } to { opacity:1; transform:none; } }
-.add-row input, .add-row select { font-size: 13px; font-family: var(--font-body); padding: 8px 12px; border: 0.5px solid var(--border-teal); border-radius: var(--radius); background: var(--surface); color: var(--text-1); outline: none; }
-.add-row input { flex: 1; min-width: 120px; }
-.add-row input:focus { border-color: var(--teal-light); }
-.add-row select { color: var(--text-2); cursor: pointer; }
-
-.btn-primary { font-size: 12px; font-family: var(--font-body); padding: 8px 16px; background: var(--teal); color: var(--sand); border: none; border-radius: var(--radius); cursor: pointer; font-weight: 500; transition: background 0.12s; }
-.btn-primary:hover { background: var(--teal-light); }
-.btn-ghost { font-size: 12px; font-family: var(--font-body); padding: 8px 12px; background: none; color: var(--text-3); border: 0.5px solid var(--border); border-radius: var(--radius); cursor: pointer; transition: all 0.12s; }
-.btn-ghost:hover { background: var(--surface); color: var(--text-2); }
-
-.btn-del { background: none; border: none; color: var(--text-4); cursor: pointer; padding: 3px 6px; border-radius: 4px; font-size: 13px; line-height: 1; transition: all 0.12s; flex-shrink: 0; }
-.btn-del:hover { color: #C0704A; background: rgba(192,112,74,0.12); }
-
-.prog-bar { height: 4px; background: var(--surface-2); border-radius: 10px; margin: 8px 0 4px; overflow: hidden; }
-.prog-fill { height: 100%; border-radius: 10px; background: var(--teal-light); transition: width 0.4s ease; }
-.bottom-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
-.mini-row { display: flex; align-items: center; gap: 8px; padding: 7px 0; border-bottom: 0.5px solid var(--border); font-size: 12px; color: var(--text-3); }
-.mini-row:last-child { border-bottom: none; }
-.empty { font-size: 12px; color: var(--text-4); padding: 12px 0; text-align: center; }
-
-/* TASKS */
-.task-list { display: flex; flex-direction: column; gap: 5px; margin-bottom: 20px; }
-.task-item { display: flex; align-items: flex-start; gap: 10px; padding: 11px 14px; border: 0.5px solid var(--border); border-radius: var(--radius); background: var(--bg-3); transition: border-color 0.12s, background 0.12s; }
-.task-item:hover { border-color: var(--border-teal); background: var(--surface); }
-.task-item.done { opacity: 0.38; }
-.task-check { width: 16px; height: 16px; border-radius: 4px; border: 1.5px solid var(--teal-light); flex-shrink: 0; margin-top: 1px; display: flex; align-items: center; justify-content: center; transition: all 0.12s; cursor: pointer; }
-.task-item.done .task-check { background: var(--teal); border-color: var(--teal); }
-.check-svg { width: 9px; height: 9px; stroke: var(--sand); fill: none; stroke-width: 2.2; }
-.task-body { flex: 1; min-width: 0; cursor: pointer; }
-.task-name { font-size: 13px; color: var(--text-1); line-height: 1.45; }
-.task-item.done .task-name { text-decoration: line-through; color: var(--text-4); }
-.task-meta { display: flex; align-items: center; gap: 8px; margin-top: 5px; }
-.tag { font-size: 10px; padding: 2px 8px; border-radius: 10px; font-weight: 500; }
-.tag-product { background: rgba(61,81,72,0.35); color: #8FC4A8; border: 0.5px solid rgba(61,81,72,0.6); }
-.tag-growth  { background: rgba(176,141,87,0.15); color: var(--brass-light); border: 0.5px solid rgba(176,141,87,0.3); }
-.tag-ops     { background: rgba(153,107,72,0.2); color: #D4A07A; border: 0.5px solid rgba(153,107,72,0.4); }
-.tag-eng     { background: rgba(45,70,80,0.35); color: #7AB8CC; border: 0.5px solid rgba(45,70,80,0.6); }
-.tag-finance { background: rgba(120,100,60,0.2); color: #C8B080; border: 0.5px solid rgba(120,100,60,0.4); }
-.task-due { font-size: 11px; color: var(--text-4); }
-.task-due.hot { color: #C0704A; }
-.prio-dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; margin-top: 5px; }
-.p-high { background: #C0704A; }
-.p-mid  { background: var(--brass); }
-.p-low  { background: var(--teal-light); }
-
-/* OKR */
-.okr-list { display: flex; flex-direction: column; gap: 14px; margin-bottom: 20px; }
-.okr-card { background: var(--bg-3); border: 0.5px solid var(--border); border-radius: var(--radius-lg); padding: 16px 18px; transition: border-color 0.12s; }
-.okr-card:hover { border-color: var(--border-teal); }
-.okr-header { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 6px; gap: 10px; }
-.okr-title { font-family: var(--font-display); font-size: 15px; font-weight: 500; color: var(--sand); flex: 1; }
-.okr-right { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
-.okr-pct { font-family: var(--font-display); font-size: 20px; font-weight: 500; color: #8FC4A8; }
-.okr-meta { display: flex; align-items: center; gap: 8px; margin-bottom: 12px; }
-.term-pill { font-size: 10px; padding: 2px 8px; border-radius: 10px; font-weight: 500; }
-.term-short  { background: rgba(176,141,87,0.15); color: var(--brass-light); border: 0.5px solid rgba(176,141,87,0.3); }
-.term-medium { background: rgba(61,81,72,0.3); color: #8FC4A8; border: 0.5px solid rgba(61,81,72,0.5); }
-.term-long   { background: rgba(45,70,80,0.35); color: #7AB8CC; border: 0.5px solid rgba(45,70,80,0.6); }
-.deadline-chip { font-size: 10px; color: var(--text-4); }
-.kr-list { display: flex; flex-direction: column; gap: 9px; margin-top: 4px; }
-.kr-row { display: flex; align-items: center; gap: 10px; }
-.kr-check { width: 14px; height: 14px; border-radius: 3px; border: 1.5px solid var(--teal-light); flex-shrink: 0; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.12s; }
-.kr-check.checked { background: var(--teal); border-color: var(--teal); }
-.kr-check-svg { width: 8px; height: 8px; stroke: var(--sand); fill: none; stroke-width: 2.2; }
-.kr-body { flex: 1; min-width: 0; }
-.kr-label-row { display: flex; justify-content: space-between; font-size: 12px; color: var(--text-2); margin-bottom: 4px; }
-.kr-label-row span:last-child { color: var(--text-4); font-size: 11px; }
-.kr-bar { height: 3px; background: var(--surface-2); border-radius: 10px; overflow: hidden; }
-.kr-fill { height: 100%; border-radius: 10px; transition: width 0.4s ease; }
-.kr-fill.on-track { background: #5C9E7A; }
-.kr-fill.at-risk  { background: var(--brass); }
-.kr-fill.behind   { background: #C0704A; }
-.kr-row.done-kr .kr-body { opacity: 0.38; }
-.kr-row.done-kr .kr-label-row span:first-child { text-decoration: line-through; }
-.okr-add-kr { margin-top: 12px; padding-top: 12px; border-top: 0.5px solid var(--border); display: flex; gap: 8px; flex-wrap: wrap; }
-.okr-add-kr input, .okr-add-kr select { font-size: 12px; font-family: var(--font-body); padding: 6px 10px; border: 0.5px solid var(--border-teal); border-radius: var(--radius); background: var(--surface); color: var(--text-1); outline: none; }
-.okr-add-kr input { flex: 1; min-width: 100px; }
-.okr-add-kr input:focus { border-color: var(--teal-light); }
-.btn-sm { font-size: 11px; font-family: var(--font-body); padding: 6px 12px; background: var(--teal-faint2); color: #8FC4A8; border: 0.5px solid var(--border-teal); border-radius: var(--radius); cursor: pointer; transition: all 0.12s; white-space: nowrap; }
-.btn-sm:hover { background: var(--teal-faint); }
-
-/* BUDGET */
-.budget-header-row { display: flex; align-items: center; gap: 20px; padding: 16px 20px; margin-bottom: 16px; background: linear-gradient(135deg, rgba(61,81,72,0.2), var(--bg-3)); border: 0.5px solid var(--border-teal); border-radius: var(--radius-lg); flex-wrap: wrap; }
-.budget-total-label { font-size: 10px; color: var(--text-3); text-transform: uppercase; letter-spacing: 0.07em; margin-bottom: 4px; }
-.budget-total-input { font-family: var(--font-display); font-size: 22px; background: none; border: none; border-bottom: 1px solid var(--border-teal); color: var(--sand); outline: none; width: 200px; padding: 2px 4px; }
-.budget-total-input:focus { border-bottom-color: var(--teal-light); }
-.cat-section { margin-bottom: 16px; }
-.cat-header { display: flex; align-items: center; justify-content: space-between; padding: 8px 14px; background: var(--teal-faint); border-radius: var(--radius) var(--radius) 0 0; border: 0.5px solid var(--border-teal); }
-.cat-name { font-size: 12px; font-weight: 500; color: #8FC4A8; }
-.cat-total { font-size: 12px; color: var(--text-3); }
-.budget-item { display: flex; align-items: center; gap: 12px; padding: 10px 14px; border: 0.5px solid var(--border); border-top: none; background: var(--bg-3); font-size: 13px; }
-.budget-item:last-child { border-radius: 0 0 var(--radius) var(--radius); }
-.b-name { flex: 1; color: var(--text-1); }
-.b-note { font-size: 11px; color: var(--text-4); }
-.b-amt { font-family: var(--font-display); font-size: 15px; color: var(--sand); white-space: nowrap; }
-.alloc-bar { height: 3px; background: var(--surface-2); border-radius: 10px; margin-top: 3px; overflow: hidden; }
-.alloc-fill { height: 100%; border-radius: 10px; background: var(--teal-light); }
-
-/* CRM */
-.contact-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px,1fr)); gap: 12px; margin-bottom: 20px; }
-.contact-card { background: var(--bg-3); border: 0.5px solid var(--border); border-radius: var(--radius-lg); padding: 16px; transition: border-color 0.12s; position: relative; }
-.contact-card:hover { border-color: var(--border-teal); }
-.contact-top { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
-.c-avatar { width: 38px; height: 38px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-family: var(--font-display); font-size: 14px; font-weight: 500; flex-shrink: 0; }
-.c-name { font-size: 14px; font-weight: 500; color: var(--text-1); }
-.c-role { font-size: 11px; color: var(--text-3); margin-top: 1px; }
-.c-details { display: flex; flex-direction: column; gap: 5px; }
-.c-detail-row { display: flex; align-items: center; gap: 7px; font-size: 11px; color: var(--text-3); }
-.status-pill { display: inline-block; font-size: 10px; padding: 2px 8px; border-radius: 10px; font-weight: 500; margin-top: 8px; }
-.s-lead     { background: rgba(176,141,87,0.15); color: var(--brass-light); border: 0.5px solid rgba(176,141,87,0.3); }
-.s-partner  { background: rgba(61,81,72,0.35); color: #8FC4A8; border: 0.5px solid rgba(61,81,72,0.55); }
-.s-investor { background: rgba(45,70,80,0.35); color: #7AB8CC; border: 0.5px solid rgba(45,70,80,0.6); }
-.s-vendor   { background: rgba(153,107,72,0.2); color: #D4A07A; border: 0.5px solid rgba(153,107,72,0.4); }
-.s-customer { background: rgba(92,80,50,0.25); color: #C8B080; border: 0.5px solid rgba(120,100,60,0.4); }
-.card-del { position: absolute; top: 10px; right: 10px; background: none; border: none; color: var(--text-4); cursor: pointer; font-size: 14px; padding: 3px 6px; border-radius: 4px; transition: all 0.12s; line-height: 1; }
-.card-del:hover { color: #C0704A; background: rgba(192,112,74,0.12); }
-
-/* HOME */
-.home-greeting { font-family: var(--font-display); font-size: 32px; font-weight: 500; color: var(--sand); margin-bottom: 4px; letter-spacing: 0.02em; }
-.home-sub { font-size: 13px; color: var(--text-3); margin-bottom: 24px; }
-.home-cards { display: grid; grid-template-columns: repeat(2,1fr); gap: 12px; margin-bottom: 24px; }
-.home-nav-card { background: var(--bg-3); border: 0.5px solid var(--border); border-radius: var(--radius-lg); padding: 18px; cursor: pointer; transition: all 0.15s; display: flex; flex-direction: column; gap: 6px; }
-.home-nav-card:hover { border-color: var(--border-teal); background: var(--surface); }
-.hnc-icon { width: 34px; height: 34px; border-radius: 8px; display: flex; align-items: center; justify-content: center; margin-bottom: 2px; }
-.hnc-title { font-family: var(--font-display); font-size: 16px; font-weight: 500; color: var(--sand); }
-.hnc-desc  { font-size: 12px; color: var(--text-3); line-height: 1.5; }
-.hnc-count { font-size: 11px; color: #8FC4A8; margin-top: 2px; }
-
-::-webkit-scrollbar { width: 5px; }
-::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: var(--surface-2); border-radius: 10px; }
+html,body{height:100%;}
+body{font-family:var(--font-body);background:var(--bg);color:var(--text-1);display:flex;height:100vh;overflow:hidden;}
+.sidebar{width:224px;flex-shrink:0;background:var(--bg-2);border-right:0.5px solid var(--border);display:flex;flex-direction:column;height:100vh;overflow-y:auto;box-shadow:inset -1px 0 0 rgba(61,81,72,0.3);}
+.sidebar-brand{padding:20px 18px 16px;border-bottom:0.5px solid var(--border);background:linear-gradient(135deg,rgba(61,81,72,0.15) 0%,transparent 100%);}
+.brand-mark{display:flex;align-items:center;gap:10px;}
+.brand-icon{width:34px;height:34px;border-radius:8px;background:linear-gradient(135deg,var(--teal) 0%,var(--brass-dark) 100%);display:flex;align-items:center;justify-content:center;font-family:var(--font-display);font-size:17px;font-weight:600;color:var(--sand-light);}
+.brand-name{font-family:var(--font-display);font-size:19px;font-weight:600;color:var(--sand);letter-spacing:0.04em;}
+.brand-sub{font-size:10px;color:var(--text-3);margin-top:1px;letter-spacing:0.06em;text-transform:uppercase;}
+.nav-section{font-size:9px;font-weight:500;color:var(--text-4);text-transform:uppercase;letter-spacing:0.1em;padding:16px 18px 6px;}
+.nav-item{display:flex;align-items:center;gap:9px;padding:8px 14px;margin:1px 8px;border-radius:var(--radius);cursor:pointer;font-size:13px;color:var(--text-3);transition:all 0.14s;user-select:none;}
+.nav-item:hover{background:var(--teal-faint);color:var(--text-2);}
+.nav-item.active{background:var(--teal-faint2);color:#8FC4A8;font-weight:500;border:0.5px solid var(--border-teal);}
+.nav-icon{width:15px;height:15px;opacity:0.65;flex-shrink:0;}
+.nav-item.active .nav-icon{opacity:1;}
+.nav-badge{margin-left:auto;background:var(--teal-faint2);color:#8FC4A8;font-size:10px;padding:1px 6px;border-radius:10px;}
+.sidebar-footer{margin-top:auto;padding:14px 18px;border-top:0.5px solid var(--border-teal);display:flex;align-items:center;gap:9px;background:var(--teal-faint);}
+.user-avatar{width:28px;height:28px;border-radius:50%;background:var(--teal);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:500;color:var(--sand);flex-shrink:0;}
+.user-name{font-size:12px;color:var(--text-2);}
+.user-role{font-size:10px;color:var(--text-4);}
+.main{flex:1;display:flex;flex-direction:column;overflow:hidden;}
+.topbar{display:flex;align-items:center;justify-content:space-between;padding:0 24px;height:52px;border-bottom:0.5px solid var(--border-teal);background:linear-gradient(90deg,rgba(61,81,72,0.12) 0%,var(--bg-2) 40%);flex-shrink:0;}
+.topbar-title{font-family:var(--font-display);font-size:21px;font-weight:500;color:var(--sand);letter-spacing:0.02em;}
+.topbar-right{display:flex;align-items:center;gap:10px;}
+.date-chip{font-size:11px;color:var(--text-3);background:var(--teal-faint);border:0.5px solid var(--border-teal);border-radius:20px;padding:4px 12px;}
+.sync-dot{width:7px;height:7px;border-radius:50%;background:#5C9E7A;transition:background 0.3s;flex-shrink:0;}
+.sync-dot.syncing{background:var(--brass);animation:pulse 1s infinite;}
+.sync-dot.error{background:#C0704A;}
+@keyframes pulse{0%,100%{opacity:1;}50%{opacity:0.4;}}
+.content{flex:1;overflow-y:auto;padding:24px;}
+.loading-screen{display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;gap:12px;color:var(--text-3);font-size:13px;}
+.spinner{width:28px;height:28px;border:2px solid var(--border-teal);border-top-color:#8FC4A8;border-radius:50%;animation:spin 0.8s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg);}}
+.metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:22px;}
+.metric{background:var(--bg-3);border:0.5px solid var(--border);border-radius:var(--radius-lg);padding:16px;}
+.metric.teal-accent{border-color:var(--border-teal);background:linear-gradient(135deg,rgba(61,81,72,0.14),var(--bg-3));}
+.metric-label{font-size:10px;color:var(--text-3);text-transform:uppercase;letter-spacing:0.07em;margin-bottom:8px;}
+.metric-value{font-family:var(--font-display);font-size:28px;font-weight:500;color:var(--sand);line-height:1;}
+.metric-sub{font-size:11px;color:var(--text-4);margin-top:4px;}
+.metric-sub.good{color:#5C9E7A;}
+.metric-sub.warn{color:#C0704A;}
+.section-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;}
+.section-title{font-family:var(--font-display);font-size:16px;font-weight:500;color:var(--sand);letter-spacing:0.02em;}
+.btn-add{display:flex;align-items:center;gap:5px;font-size:12px;font-family:var(--font-body);color:#8FC4A8;background:var(--teal-faint);border:0.5px solid var(--border-teal);border-radius:var(--radius);padding:5px 12px;cursor:pointer;transition:all 0.12s;}
+.btn-add:hover{background:var(--teal-faint2);}
+.card{background:var(--bg-3);border:0.5px solid var(--border);border-radius:var(--radius-lg);padding:18px;}
+.add-row{display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap;animation:slideDown 0.15s ease;}
+@keyframes slideDown{from{opacity:0;transform:translateY(-6px);}to{opacity:1;transform:none;}}
+.add-row input,.add-row select{font-size:13px;font-family:var(--font-body);padding:8px 12px;border:0.5px solid var(--border-teal);border-radius:var(--radius);background:var(--surface);color:var(--text-1);outline:none;}
+.add-row input{flex:1;min-width:120px;}
+.add-row input:focus{border-color:var(--teal-light);}
+.add-row select{color:var(--text-2);cursor:pointer;}
+.btn-primary{font-size:12px;font-family:var(--font-body);padding:8px 16px;background:var(--teal);color:var(--sand);border:none;border-radius:var(--radius);cursor:pointer;font-weight:500;transition:background 0.12s;}
+.btn-primary:hover{background:var(--teal-light);}
+.btn-ghost{font-size:12px;font-family:var(--font-body);padding:8px 12px;background:none;color:var(--text-3);border:0.5px solid var(--border);border-radius:var(--radius);cursor:pointer;transition:all 0.12s;}
+.btn-ghost:hover{background:var(--surface);color:var(--text-2);}
+.btn-del{background:none;border:none;color:var(--text-4);cursor:pointer;padding:3px 6px;border-radius:4px;font-size:13px;line-height:1;transition:all 0.12s;flex-shrink:0;}
+.btn-del:hover{color:#C0704A;background:rgba(192,112,74,0.12);}
+.prog-bar{height:4px;background:var(--surface-2);border-radius:10px;margin:8px 0 4px;overflow:hidden;}
+.prog-fill{height:100%;border-radius:10px;background:var(--teal-light);transition:width 0.4s ease;}
+.bottom-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+.mini-row{display:flex;align-items:center;gap:8px;padding:7px 0;border-bottom:0.5px solid var(--border);font-size:12px;color:var(--text-3);}
+.mini-row:last-child{border-bottom:none;}
+.empty{font-size:12px;color:var(--text-4);padding:12px 0;text-align:center;}
+.task-list{display:flex;flex-direction:column;gap:5px;margin-bottom:20px;}
+.task-item{display:flex;align-items:flex-start;gap:10px;padding:11px 14px;border:0.5px solid var(--border);border-radius:var(--radius);background:var(--bg-3);transition:border-color 0.12s,background 0.12s;}
+.task-item:hover{border-color:var(--border-teal);background:var(--surface);}
+.task-item.done{opacity:0.38;}
+.task-check{width:16px;height:16px;border-radius:4px;border:1.5px solid var(--teal-light);flex-shrink:0;margin-top:1px;display:flex;align-items:center;justify-content:center;transition:all 0.12s;cursor:pointer;}
+.task-item.done .task-check{background:var(--teal);border-color:var(--teal);}
+.check-svg{width:9px;height:9px;stroke:var(--sand);fill:none;stroke-width:2.2;}
+.task-body{flex:1;min-width:0;cursor:pointer;}
+.task-name{font-size:13px;color:var(--text-1);line-height:1.45;}
+.task-item.done .task-name{text-decoration:line-through;color:var(--text-4);}
+.task-meta{display:flex;align-items:center;gap:8px;margin-top:5px;}
+.tag{font-size:10px;padding:2px 8px;border-radius:10px;font-weight:500;}
+.tag-product{background:rgba(61,81,72,0.35);color:#8FC4A8;border:0.5px solid rgba(61,81,72,0.6);}
+.tag-growth{background:rgba(176,141,87,0.15);color:var(--brass-light);border:0.5px solid rgba(176,141,87,0.3);}
+.tag-ops{background:rgba(153,107,72,0.2);color:#D4A07A;border:0.5px solid rgba(153,107,72,0.4);}
+.tag-eng{background:rgba(45,70,80,0.35);color:#7AB8CC;border:0.5px solid rgba(45,70,80,0.6);}
+.tag-finance{background:rgba(120,100,60,0.2);color:#C8B080;border:0.5px solid rgba(120,100,60,0.4);}
+.task-due{font-size:11px;color:var(--text-4);}
+.task-due.hot{color:#C0704A;}
+.prio-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0;margin-top:5px;}
+.p-high{background:#C0704A;}.p-mid{background:var(--brass);}.p-low{background:var(--teal-light);}
+.okr-list{display:flex;flex-direction:column;gap:14px;margin-bottom:20px;}
+.okr-card{background:var(--bg-3);border:0.5px solid var(--border);border-radius:var(--radius-lg);padding:16px 18px;transition:border-color 0.12s;}
+.okr-card:hover{border-color:var(--border-teal);}
+.okr-header{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:6px;gap:10px;}
+.okr-title{font-family:var(--font-display);font-size:15px;font-weight:500;color:var(--sand);flex:1;}
+.okr-right{display:flex;align-items:center;gap:8px;flex-shrink:0;}
+.okr-pct{font-family:var(--font-display);font-size:20px;font-weight:500;color:#8FC4A8;}
+.okr-meta{display:flex;align-items:center;gap:8px;margin-bottom:12px;}
+.term-pill{font-size:10px;padding:2px 8px;border-radius:10px;font-weight:500;}
+.term-short{background:rgba(176,141,87,0.15);color:var(--brass-light);border:0.5px solid rgba(176,141,87,0.3);}
+.term-medium{background:rgba(61,81,72,0.3);color:#8FC4A8;border:0.5px solid rgba(61,81,72,0.5);}
+.term-long{background:rgba(45,70,80,0.35);color:#7AB8CC;border:0.5px solid rgba(45,70,80,0.6);}
+.deadline-chip{font-size:10px;color:var(--text-4);}
+.kr-list{display:flex;flex-direction:column;gap:9px;margin-top:4px;}
+.kr-row{display:flex;align-items:center;gap:10px;}
+.kr-check{width:14px;height:14px;border-radius:3px;border:1.5px solid var(--teal-light);flex-shrink:0;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all 0.12s;}
+.kr-check.checked{background:var(--teal);border-color:var(--teal);}
+.kr-check-svg{width:8px;height:8px;stroke:var(--sand);fill:none;stroke-width:2.2;}
+.kr-body{flex:1;min-width:0;}
+.kr-label-row{display:flex;justify-content:space-between;font-size:12px;color:var(--text-2);margin-bottom:4px;}
+.kr-label-row span:last-child{color:var(--text-4);font-size:11px;}
+.kr-bar{height:3px;background:var(--surface-2);border-radius:10px;overflow:hidden;}
+.kr-fill{height:100%;border-radius:10px;transition:width 0.4s ease;}
+.kr-fill.on-track{background:#5C9E7A;}.kr-fill.at-risk{background:var(--brass);}.kr-fill.behind{background:#C0704A;}
+.kr-row.done-kr .kr-body{opacity:0.38;}
+.kr-row.done-kr .kr-label-row span:first-child{text-decoration:line-through;}
+.okr-add-kr{margin-top:12px;padding-top:12px;border-top:0.5px solid var(--border);display:flex;gap:8px;flex-wrap:wrap;}
+.okr-add-kr input,.okr-add-kr select{font-size:12px;font-family:var(--font-body);padding:6px 10px;border:0.5px solid var(--border-teal);border-radius:var(--radius);background:var(--surface);color:var(--text-1);outline:none;}
+.okr-add-kr input{flex:1;min-width:100px;}
+.okr-add-kr input:focus{border-color:var(--teal-light);}
+.btn-sm{font-size:11px;font-family:var(--font-body);padding:6px 12px;background:var(--teal-faint2);color:#8FC4A8;border:0.5px solid var(--border-teal);border-radius:var(--radius);cursor:pointer;transition:all 0.12s;white-space:nowrap;}
+.btn-sm:hover{background:var(--teal-faint);}
+.budget-header-row{display:flex;align-items:center;gap:20px;padding:16px 20px;margin-bottom:16px;background:linear-gradient(135deg,rgba(61,81,72,0.2),var(--bg-3));border:0.5px solid var(--border-teal);border-radius:var(--radius-lg);flex-wrap:wrap;}
+.budget-total-label{font-size:10px;color:var(--text-3);text-transform:uppercase;letter-spacing:0.07em;margin-bottom:4px;}
+.budget-total-input{font-family:var(--font-display);font-size:22px;background:none;border:none;border-bottom:1px solid var(--border-teal);color:var(--sand);outline:none;width:200px;padding:2px 4px;}
+.budget-total-input:focus{border-bottom-color:var(--teal-light);}
+.cat-section{margin-bottom:16px;}
+.cat-header{display:flex;align-items:center;justify-content:space-between;padding:8px 14px;background:var(--teal-faint);border-radius:var(--radius) var(--radius) 0 0;border:0.5px solid var(--border-teal);}
+.cat-name{font-size:12px;font-weight:500;color:#8FC4A8;}
+.cat-total{font-size:12px;color:var(--text-3);}
+.budget-item{display:flex;align-items:center;gap:12px;padding:10px 14px;border:0.5px solid var(--border);border-top:none;background:var(--bg-3);font-size:13px;}
+.budget-item:last-child{border-radius:0 0 var(--radius) var(--radius);}
+.b-name{flex:1;color:var(--text-1);}
+.b-note{font-size:11px;color:var(--text-4);}
+.b-amt{font-family:var(--font-display);font-size:15px;color:var(--sand);white-space:nowrap;}
+.alloc-bar{height:3px;background:var(--surface-2);border-radius:10px;margin-top:3px;overflow:hidden;}
+.alloc-fill{height:100%;border-radius:10px;background:var(--teal-light);}
+.contact-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:12px;margin-bottom:20px;}
+.contact-card{background:var(--bg-3);border:0.5px solid var(--border);border-radius:var(--radius-lg);padding:16px;transition:border-color 0.12s;position:relative;}
+.contact-card:hover{border-color:var(--border-teal);}
+.contact-top{display:flex;align-items:center;gap:12px;margin-bottom:12px;}
+.c-avatar{width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:var(--font-display);font-size:14px;font-weight:500;flex-shrink:0;}
+.c-name{font-size:14px;font-weight:500;color:var(--text-1);}
+.c-role{font-size:11px;color:var(--text-3);margin-top:1px;}
+.c-details{display:flex;flex-direction:column;gap:5px;}
+.c-detail-row{display:flex;align-items:center;gap:7px;font-size:11px;color:var(--text-3);}
+.status-pill{display:inline-block;font-size:10px;padding:2px 8px;border-radius:10px;font-weight:500;margin-top:8px;}
+.s-lead{background:rgba(176,141,87,0.15);color:var(--brass-light);border:0.5px solid rgba(176,141,87,0.3);}
+.s-partner{background:rgba(61,81,72,0.35);color:#8FC4A8;border:0.5px solid rgba(61,81,72,0.55);}
+.s-investor{background:rgba(45,70,80,0.35);color:#7AB8CC;border:0.5px solid rgba(45,70,80,0.6);}
+.s-vendor{background:rgba(153,107,72,0.2);color:#D4A07A;border:0.5px solid rgba(153,107,72,0.4);}
+.s-customer{background:rgba(92,80,50,0.25);color:#C8B080;border:0.5px solid rgba(120,100,60,0.4);}
+.card-del{position:absolute;top:10px;right:10px;background:none;border:none;color:var(--text-4);cursor:pointer;font-size:14px;padding:3px 6px;border-radius:4px;transition:all 0.12s;line-height:1;}
+.card-del:hover{color:#C0704A;background:rgba(192,112,74,0.12);}
+.home-greeting{font-family:var(--font-display);font-size:32px;font-weight:500;color:var(--sand);margin-bottom:4px;letter-spacing:0.02em;}
+.home-sub{font-size:13px;color:var(--text-3);margin-bottom:24px;}
+.home-cards{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-bottom:24px;}
+.home-nav-card{background:var(--bg-3);border:0.5px solid var(--border);border-radius:var(--radius-lg);padding:18px;cursor:pointer;transition:all 0.15s;display:flex;flex-direction:column;gap:6px;}
+.home-nav-card:hover{border-color:var(--border-teal);background:var(--surface);}
+.hnc-icon{width:34px;height:34px;border-radius:8px;display:flex;align-items:center;justify-content:center;margin-bottom:2px;}
+.hnc-title{font-family:var(--font-display);font-size:16px;font-weight:500;color:var(--sand);}
+.hnc-desc{font-size:12px;color:var(--text-3);line-height:1.5;}
+.hnc-count{font-size:11px;color:#8FC4A8;margin-top:2px;}
+::-webkit-scrollbar{width:5px;}
+::-webkit-scrollbar-track{background:transparent;}
+::-webkit-scrollbar-thumb{background:var(--surface-2);border-radius:10px;}
 </style>
 </head>
 <body>
-
 <div class="sidebar">
   <div class="sidebar-brand">
     <div class="brand-mark">
@@ -287,87 +199,43 @@ body {
     Tasks <span class="nav-badge" id="nb-tasks">—</span>
   </div>
   <div class="nav-item" onclick="nav('okr',this)">
-    <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="8" cy="8" r="6"/><circle cx="8" cy="8" r="3"/><circle cx="8" cy="8" r="1" fill="currentColor"/></svg>
-    Goals & OKRs
+    <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="8" cy="8" r="6"/><circle cx="8" cy="8" r="3"/><circle cx="8" cy="8" r="1" fill="currentColor"/></svg>Goals & OKRs
   </div>
   <div class="nav-item" onclick="nav('budget',this)">
-    <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 4h12v8H2z"/><path d="M5 4V3a1 1 0 011-1h4a1 1 0 011 1v1"/><path d="M8 8v.01"/></svg>
-    Budget Planner
+    <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 4h12v8H2z"/><path d="M5 4V3a1 1 0 011-1h4a1 1 0 011 1v1"/><path d="M8 8v.01"/></svg>Budget Planner
   </div>
   <div class="nav-item" onclick="nav('crm',this)">
-    <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="6" cy="5" r="2.5"/><path d="M2 13c0-2.2 1.8-4 4-4s4 1.8 4 4"/><circle cx="12" cy="5" r="2"/><path d="M12 9c1.7 0 3 1.3 3 3"/></svg>
-    Contacts & CRM
+    <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="6" cy="5" r="2.5"/><path d="M2 13c0-2.2 1.8-4 4-4s4 1.8 4 4"/><circle cx="12" cy="5" r="2"/><path d="M12 9c1.7 0 3 1.3 3 3"/></svg>Contacts & CRM
   </div>
   <div class="sidebar-footer">
     <div class="user-avatar">SK</div>
     <div><div class="user-name">Sukoon Team</div><div class="user-role">Founders</div></div>
   </div>
 </div>
-
 <div class="main">
   <div class="topbar">
     <div class="topbar-title" id="page-title">Home</div>
-    <span class="date-chip" id="today-date"></span>
+    <div class="topbar-right">
+      <div class="sync-dot" id="sync-dot" title="Sync status"></div>
+      <span class="date-chip" id="today-date"></span>
+    </div>
   </div>
-  <div class="content" id="content"></div>
+  <div class="content" id="content">
+    <div class="loading-screen"><div class="spinner"></div><span>Connecting to Sukoon...</span></div>
+  </div>
 </div>
-
 <script>
-const SK = 'sukoon_v3';
-function load(k,d){try{const v=localStorage.getItem(SK+'_'+k);return v?JSON.parse(v):d;}catch(e){return d;}}
-function save(k,v){try{localStorage.setItem(SK+'_'+k,JSON.stringify(v));}catch(e){}}
+const SUPABASE_URL='https://decufrbbajkqoatdeoov.supabase.co';
+const SUPABASE_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRlY3VmcmJiYWprcW9hdGRlb292Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzYxMzg5MzQsImV4cCI6MjA5MTcxNDkzNH0.KBRpEcV6umHc17bJW7eqeq53FDfW57fTgezn_vgJDJk';
+const sb=supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
 
-let tasks = load('tasks',[
-  {id:1,name:"Finalize MVP feature list",tag:"product",priority:"high",due:"today",done:false},
-  {id:2,name:"Set up analytics (PostHog)",tag:"eng",priority:"high",due:"today",done:false},
-  {id:3,name:"Draft investor update email",tag:"growth",priority:"high",due:"tomorrow",done:false},
-  {id:4,name:"Define pricing tiers",tag:"product",priority:"mid",due:"this week",done:false},
-  {id:5,name:"Register business entity",tag:"ops",priority:"mid",due:"this week",done:false},
-  {id:6,name:"Set up Stripe",tag:"finance",priority:"mid",due:"this week",done:false},
-  {id:7,name:"Write onboarding email sequence",tag:"growth",priority:"low",due:"next week",done:false},
-  {id:8,name:"Schedule weekly standup",tag:"ops",priority:"low",due:"next week",done:false},
-]);
-let taskId = tasks.length ? Math.max(...tasks.map(t=>t.id))+1 : 1;
-
-let okrs = load('okrs',[
-  {id:1,objective:"Launch MVP to first 50 users",term:"short",deadline:"2026-06-30",krs:[
-    {id:1,label:"Onboard beta users",current:12,target:50,status:"on-track",done:false},
-    {id:2,label:"Feature completion",current:70,target:100,status:"on-track",done:false},
-    {id:3,label:"NPS score",current:35,target:50,status:"at-risk",done:false},
-  ]},
-  {id:2,objective:"Establish brand presence in PH market",term:"medium",deadline:"2026-12-31",krs:[
-    {id:1,label:"Social media followers",current:320,target:1000,status:"behind",done:false},
-    {id:2,label:"Press mentions",current:2,target:5,status:"at-risk",done:false},
-    {id:3,label:"Partnership conversations",current:3,target:8,status:"on-track",done:false},
-  ]},
-]);
-let okrId = okrs.length ? Math.max(...okrs.map(o=>o.id))+1 : 1;
-let krId  = 200;
-
-let budget = load('budget',{
-  total:500000,
-  items:[
-    {id:1,name:"Freelance developer",category:"Engineering",amount:25000,note:"Contract, 3 months"},
-    {id:2,name:"Domain & hosting",category:"Infrastructure",amount:800,note:"Annual"},
-    {id:3,name:"Design tools (Figma)",category:"Tools",amount:750,note:"Monthly"},
-    {id:4,name:"Google Workspace",category:"Tools",amount:400,note:"Monthly"},
-    {id:5,name:"Market research",category:"Marketing",amount:3000,note:"One-time"},
-    {id:6,name:"Legal (entity setup)",category:"Operations",amount:5000,note:"One-time"},
-  ]
-});
-let budgetItemId = budget.items.length ? Math.max(...budget.items.map(b=>b.id))+1 : 1;
-
-let contacts = load('contacts',[
-  {id:1,name:"Maria Santos",role:"Potential Investor",company:"Archipelago Ventures",email:"m.santos@archventures.ph",status:"investor"},
-  {id:2,name:"James Reyes",role:"Tech Partner",company:"CodeMNL",email:"james@codemnl.com",status:"partner"},
-  {id:3,name:"Ana Cruz",role:"Early Adopter",company:"Freelance",email:"ana.cruz@gmail.com",status:"customer"},
-  {id:4,name:"David Lim",role:"Branding Agency",company:"Studio Lim",email:"david@studiolim.ph",status:"vendor"},
-]);
-let contactId = contacts.length ? Math.max(...contacts.map(c=>c.id))+1 : 1;
+let tasks=[],okrs=[],krMap={},budgetTotal=0,budgetItems=[],contacts=[],budgetRowId=null;
+let currentPage='home';
 
 function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
 function fmt(n){return Number(n||0).toLocaleString('en-PH');}
 function initials(n){return n.split(' ').map(w=>w[0]).slice(0,2).join('').toUpperCase();}
+function setSyncing(s){const d=document.getElementById('sync-dot');if(!d)return;d.className='sync-dot'+(s==='syncing'?' syncing':s==='error'?' error':'');}
 
 const tagLabels={product:"Product",growth:"Growth",ops:"Ops",eng:"Eng",finance:"Finance"};
 const aColors=[{bg:'rgba(61,81,72,0.4)',color:'#8FC4A8'},{bg:'rgba(176,141,87,0.2)',color:'#C9A96E'},{bg:'rgba(45,70,80,0.4)',color:'#7AB8CC'},{bg:'rgba(153,107,72,0.2)',color:'#D4A07A'},{bg:'rgba(92,80,50,0.3)',color:'#C8B080'}];
@@ -375,9 +243,49 @@ const statusLabels={lead:'Lead',partner:'Partner',investor:'Investor',vendor:'Ve
 const statusClass={lead:'s-lead',partner:'s-partner',investor:'s-investor',vendor:'s-vendor',customer:'s-customer'};
 const termLabels={short:'Short-term',medium:'Medium-term',long:'Long-term'};
 const termClass={short:'term-short',medium:'term-medium',long:'term-long'};
-
-let currentPage='home';
 const pageTitles={home:'Home',tasks:'Tasks',okr:'Goals & OKRs',budget:'Budget Planner',crm:'Contacts & CRM'};
+
+async function loadAll(){
+  try{
+    const[t,o,kr,b,bi,c]=await Promise.all([
+      sb.from('tasks').select('*').order('created_at'),
+      sb.from('okrs').select('*').order('created_at'),
+      sb.from('key_results').select('*').order('created_at'),
+      sb.from('budget').select('*').limit(1).single(),
+      sb.from('budget_items').select('*').order('created_at'),
+      sb.from('contacts').select('*').order('created_at'),
+    ]);
+    tasks=t.data||[];
+    okrs=o.data||[];
+    krMap={};(kr.data||[]).forEach(k=>{if(!krMap[k.okr_id])krMap[k.okr_id]=[];krMap[k.okr_id].push(k);});
+    budgetRowId=b.data?.id||null;
+    budgetTotal=b.data?.total_budget||0;
+    budgetItems=bi.data||[];
+    contacts=c.data||[];
+    render();
+  }catch(e){setSyncing('error');console.error(e);}
+}
+
+function subscribeRealtime(){
+  sb.channel('sukoon-rt')
+    .on('postgres_changes',{event:'*',schema:'public',table:'tasks'},()=>reload('tasks'))
+    .on('postgres_changes',{event:'*',schema:'public',table:'okrs'},()=>reload('okrs'))
+    .on('postgres_changes',{event:'*',schema:'public',table:'key_results'},()=>reload('krs'))
+    .on('postgres_changes',{event:'*',schema:'public',table:'budget'},()=>reload('budget'))
+    .on('postgres_changes',{event:'*',schema:'public',table:'budget_items'},()=>reload('budget_items'))
+    .on('postgres_changes',{event:'*',schema:'public',table:'contacts'},()=>reload('contacts'))
+    .subscribe();
+}
+
+async function reload(table){
+  if(table==='tasks'){const{data}=await sb.from('tasks').select('*').order('created_at');tasks=data||[];}
+  if(table==='okrs'){const{data}=await sb.from('okrs').select('*').order('created_at');okrs=data||[];}
+  if(table==='krs'){const{data}=await sb.from('key_results').select('*').order('created_at');krMap={};(data||[]).forEach(k=>{if(!krMap[k.okr_id])krMap[k.okr_id]=[];krMap[k.okr_id].push(k);});}
+  if(table==='budget'){const{data}=await sb.from('budget').select('*').limit(1).single();budgetRowId=data?.id||null;budgetTotal=data?.total_budget||0;}
+  if(table==='budget_items'){const{data}=await sb.from('budget_items').select('*').order('created_at');budgetItems=data||[];}
+  if(table==='contacts'){const{data}=await sb.from('contacts').select('*').order('created_at');contacts=data||[];}
+  render();
+}
 
 function nav(page,el){
   currentPage=page;
@@ -390,230 +298,143 @@ function nav(page,el){
 function render(){
   updateBadges();
   const c=document.getElementById('content');
-  if(currentPage==='home')   c.innerHTML=renderHome();
-  if(currentPage==='tasks')  c.innerHTML=renderTasks();
-  if(currentPage==='okr')    c.innerHTML=renderOKR();
-  if(currentPage==='budget') c.innerHTML=renderBudget();
-  if(currentPage==='crm')    c.innerHTML=renderCRM();
+  if(currentPage==='home')c.innerHTML=renderHome();
+  if(currentPage==='tasks')c.innerHTML=renderTasks();
+  if(currentPage==='okr')c.innerHTML=renderOKR();
+  if(currentPage==='budget')c.innerHTML=renderBudget();
+  if(currentPage==='crm')c.innerHTML=renderCRM();
 }
 
-function updateBadges(){
-  document.getElementById('nb-tasks').textContent=tasks.filter(t=>!t.done).length;
-}
+function updateBadges(){const el=document.getElementById('nb-tasks');if(el)el.textContent=tasks.filter(t=>!t.done).length;}
 
 function toggleEl(id){
-  const el=document.getElementById(id); if(!el)return;
+  const el=document.getElementById(id);if(!el)return;
   const open=el.style.display!=='none';
   el.style.display=open?'none':'block';
   if(!open){const inp=el.querySelector('input');if(inp)inp.focus();}
 }
 
-// ── HOME ──
 function renderHome(){
   const hour=new Date().getHours();
   const greet=hour<12?'Good morning':hour<17?'Good afternoon':'Good evening';
   const pending=tasks.filter(t=>!t.done).length;
   const todayT=tasks.filter(t=>t.due==='today'&&!t.done).length;
-  const alloc=budget.items.reduce((a,b)=>a+b.amount,0);
-  const rem=budget.total-alloc;
-  const avgOkr=okrs.length?Math.round(okrs.map(o=>{
-    const p=o.krs.reduce((a,k)=>a+Math.min(100,Math.round(k.current/k.target*100)),0);
-    return o.krs.length?Math.round(p/o.krs.length):0;
-  }).reduce((a,b)=>a+b,0)/okrs.length):0;
+  const alloc=budgetItems.reduce((a,b)=>a+b.amount,0);
+  const rem=budgetTotal-alloc;
+  const avgOkr=okrs.length?Math.round(okrs.map(o=>{const krs=krMap[o.id]||[];if(!krs.length)return 0;return Math.round(krs.reduce((a,k)=>a+Math.min(100,Math.round(k.current_val/k.target_val*100)),0)/krs.length);}).reduce((a,b)=>a+b,0)/okrs.length):0;
   const navItems=document.querySelectorAll('.nav-item');
-  return `
-    <div class="home-greeting">${greet}, founders.</div>
+  return `<div class="home-greeting">${greet}, founders.</div>
     <div class="home-sub">Here's where Sukoon stands today.</div>
     <div class="metrics">
       <div class="metric teal-accent"><div class="metric-label">Open tasks</div><div class="metric-value">${pending}</div><div class="metric-sub${todayT>0?' warn':''}">${todayT} due today</div></div>
       <div class="metric teal-accent"><div class="metric-label">OKR progress</div><div class="metric-value">${avgOkr}%</div><div class="metric-sub good">across ${okrs.length} objectives</div></div>
-      <div class="metric teal-accent"><div class="metric-label">Budget remaining</div><div class="metric-value">₱${fmt(rem)}</div><div class="metric-sub">of ₱${fmt(budget.total)}</div></div>
-      <div class="metric teal-accent"><div class="metric-label">Contacts</div><div class="metric-value">${contacts.length}</div><div class="metric-sub">${contacts.filter(c=>c.status==='lead').length} leads · ${contacts.filter(c=>c.status==='customer').length} customers</div></div>
+      <div class="metric teal-accent"><div class="metric-label">Budget remaining</div><div class="metric-value">&#8369;${fmt(rem)}</div><div class="metric-sub">of &#8369;${fmt(budgetTotal)}</div></div>
+      <div class="metric teal-accent"><div class="metric-label">Contacts</div><div class="metric-value">${contacts.length}</div><div class="metric-sub">${contacts.filter(c=>c.status==='lead').length} leads &middot; ${contacts.filter(c=>c.status==='customer').length} customers</div></div>
     </div>
     <div class="home-cards">
-      <div class="home-nav-card" onclick="nav('tasks',document.querySelectorAll('.nav-item')[1])">
-        <div class="hnc-icon" style="background:rgba(61,81,72,0.3);"><svg width="18" height="18" viewBox="0 0 16 16" fill="none" stroke="#8FC4A8" stroke-width="1.5"><rect x="2" y="2" width="12" height="12" rx="2"/><path d="M5 8l2 2 4-4"/></svg></div>
-        <div class="hnc-title">Task Manager</div>
-        <div class="hnc-desc">Track everything your startup needs to get done, with priorities and due dates.</div>
-        <div class="hnc-count">${pending} open tasks</div>
-      </div>
-      <div class="home-nav-card" onclick="nav('okr',document.querySelectorAll('.nav-item')[2])">
-        <div class="hnc-icon" style="background:rgba(61,81,72,0.2);"><svg width="18" height="18" viewBox="0 0 16 16" fill="none" stroke="#8FC4A8" stroke-width="1.5"><circle cx="8" cy="8" r="6"/><circle cx="8" cy="8" r="3"/><circle cx="8" cy="8" r="1" fill="#8FC4A8"/></svg></div>
-        <div class="hnc-title">Goals & OKRs</div>
-        <div class="hnc-desc">Set short, medium, and long-term objectives with trackable key results.</div>
-        <div class="hnc-count">${okrs.length} objectives · ${avgOkr}% avg progress</div>
-      </div>
-      <div class="home-nav-card" onclick="nav('budget',document.querySelectorAll('.nav-item')[3])">
-        <div class="hnc-icon" style="background:rgba(61,81,72,0.2);"><svg width="18" height="18" viewBox="0 0 16 16" fill="none" stroke="#8FC4A8" stroke-width="1.5"><path d="M2 4h12v8H2z"/><path d="M5 4V3a1 1 0 011-1h4a1 1 0 011 1v1"/><path d="M8 8v.01"/></svg></div>
-        <div class="hnc-title">Budget Planner</div>
-        <div class="hnc-desc">Set a total budget and allocate it across categories and items.</div>
-        <div class="hnc-count">₱${fmt(rem)} remaining</div>
-      </div>
-      <div class="home-nav-card" onclick="nav('crm',document.querySelectorAll('.nav-item')[4])">
-        <div class="hnc-icon" style="background:rgba(61,81,72,0.2);"><svg width="18" height="18" viewBox="0 0 16 16" fill="none" stroke="#8FC4A8" stroke-width="1.5"><circle cx="6" cy="5" r="2.5"/><path d="M2 13c0-2.2 1.8-4 4-4s4 1.8 4 4"/><circle cx="12" cy="5" r="2"/><path d="M12 9c1.7 0 3 1.3 3 3"/></svg></div>
-        <div class="hnc-title">Contacts & CRM</div>
-        <div class="hnc-desc">Keep track of investors, partners, customers, vendors, and leads.</div>
-        <div class="hnc-count">${contacts.length} contacts</div>
-      </div>
+      <div class="home-nav-card" onclick="nav('tasks',document.querySelectorAll('.nav-item')[1])"><div class="hnc-icon" style="background:rgba(61,81,72,0.3);"><svg width="18" height="18" viewBox="0 0 16 16" fill="none" stroke="#8FC4A8" stroke-width="1.5"><rect x="2" y="2" width="12" height="12" rx="2"/><path d="M5 8l2 2 4-4"/></svg></div><div class="hnc-title">Task Manager</div><div class="hnc-desc">Track everything your startup needs to get done.</div><div class="hnc-count">${pending} open tasks</div></div>
+      <div class="home-nav-card" onclick="nav('okr',document.querySelectorAll('.nav-item')[2])"><div class="hnc-icon" style="background:rgba(61,81,72,0.2);"><svg width="18" height="18" viewBox="0 0 16 16" fill="none" stroke="#8FC4A8" stroke-width="1.5"><circle cx="8" cy="8" r="6"/><circle cx="8" cy="8" r="3"/><circle cx="8" cy="8" r="1" fill="#8FC4A8"/></svg></div><div class="hnc-title">Goals & OKRs</div><div class="hnc-desc">Set short, medium, and long-term objectives with trackable key results.</div><div class="hnc-count">${okrs.length} objectives &middot; ${avgOkr}% avg progress</div></div>
+      <div class="home-nav-card" onclick="nav('budget',document.querySelectorAll('.nav-item')[3])"><div class="hnc-icon" style="background:rgba(61,81,72,0.2);"><svg width="18" height="18" viewBox="0 0 16 16" fill="none" stroke="#8FC4A8" stroke-width="1.5"><path d="M2 4h12v8H2z"/><path d="M5 4V3a1 1 0 011-1h4a1 1 0 011 1v1"/><path d="M8 8v.01"/></svg></div><div class="hnc-title">Budget Planner</div><div class="hnc-desc">Allocate your total budget across categories and line items.</div><div class="hnc-count">&#8369;${fmt(rem)} remaining</div></div>
+      <div class="home-nav-card" onclick="nav('crm',document.querySelectorAll('.nav-item')[4])"><div class="hnc-icon" style="background:rgba(61,81,72,0.2);"><svg width="18" height="18" viewBox="0 0 16 16" fill="none" stroke="#8FC4A8" stroke-width="1.5"><circle cx="6" cy="5" r="2.5"/><path d="M2 13c0-2.2 1.8-4 4-4s4 1.8 4 4"/><circle cx="12" cy="5" r="2"/><path d="M12 9c1.7 0 3 1.3 3 3"/></svg></div><div class="hnc-title">Contacts & CRM</div><div class="hnc-desc">Track investors, partners, customers, vendors, and leads.</div><div class="hnc-count">${contacts.length} contacts</div></div>
     </div>
     <div class="section-header"><span class="section-title">Today's priorities</span></div>
     <div style="display:flex;flex-direction:column;gap:5px;">
-      ${tasks.filter(t=>!t.done&&t.due==='today').map(t=>`
-        <div class="mini-row">
-          <div class="prio-dot p-${t.priority}"></div>
-          <span style="flex:1;color:var(--text-2);">${esc(t.name)}</span>
-          <span class="tag tag-${t.tag}">${tagLabels[t.tag]}</span>
-        </div>`).join('')||'<div class="empty">Nothing due today — or all done!</div>'}
+      ${tasks.filter(t=>!t.done&&t.due==='today').map(t=>`<div class="mini-row"><div class="prio-dot p-${t.priority}"></div><span style="flex:1;color:var(--text-2);">${esc(t.name)}</span><span class="tag tag-${t.tag}">${tagLabels[t.tag]||t.tag}</span></div>`).join('')||'<div class="empty">Nothing due today.</div>'}
     </div>`;
 }
 
-// ── TASKS ──
 function renderTasks(){
-  const total=tasks.length, done=tasks.filter(t=>t.done).length;
+  const total=tasks.length,done=tasks.filter(t=>t.done).length;
   const pct=total?Math.round(done/total*100):0;
   const high=tasks.filter(t=>t.priority==='high'&&!t.done).length;
   const today=tasks.filter(t=>t.due==='today'&&!t.done).length;
   const areas=['product','growth','ops','eng','finance'];
-  const areaNames={product:'Product',growth:'Growth',ops:'Operations',eng:'Engineering',finance:'Finance'};
-  const areaCol={product:'#5C9E7A',growth:'#B08D57',ops:'#C0704A',eng:'#5A8FA0',finance:'#A89060'};
-  return `
-    <div class="metrics">
-      <div class="metric"><div class="metric-label">Total</div><div class="metric-value">${total}</div><div class="metric-sub">tasks</div></div>
-      <div class="metric"><div class="metric-label">Completed</div><div class="metric-value">${done}</div><div class="metric-sub good">${pct}% done</div></div>
-      <div class="metric"><div class="metric-label">High priority</div><div class="metric-value">${high}</div><div class="metric-sub${high>0?' warn':''}">open</div></div>
-      <div class="metric"><div class="metric-label">Due today</div><div class="metric-value">${today}</div><div class="metric-sub">remaining</div></div>
+  const aN={product:'Product',growth:'Growth',ops:'Operations',eng:'Engineering',finance:'Finance'};
+  const aC={product:'#5C9E7A',growth:'#B08D57',ops:'#C0704A',eng:'#5A8FA0',finance:'#A89060'};
+  return `<div class="metrics">
+    <div class="metric"><div class="metric-label">Total</div><div class="metric-value">${total}</div><div class="metric-sub">tasks</div></div>
+    <div class="metric"><div class="metric-label">Completed</div><div class="metric-value">${done}</div><div class="metric-sub good">${pct}% done</div></div>
+    <div class="metric"><div class="metric-label">High priority</div><div class="metric-value">${high}</div><div class="metric-sub${high>0?' warn':''}">open</div></div>
+    <div class="metric"><div class="metric-label">Due today</div><div class="metric-value">${today}</div><div class="metric-sub">remaining</div></div>
     </div>
-    <div class="section-header">
-      <span class="section-title">All tasks</span>
-      <button class="btn-add" onclick="toggleEl('task-add-row')">+ Add task</button>
-    </div>
-    <div id="task-add-row" style="display:none;">
-      <div class="add-row">
-        <input type="text" id="t-name" placeholder="Task name…" onkeydown="if(event.key==='Enter')addTask()" />
-        <select id="t-tag"><option value="ops">Ops</option><option value="product">Product</option><option value="growth">Growth</option><option value="eng">Engineering</option><option value="finance">Finance</option></select>
-        <select id="t-prio"><option value="mid">Mid priority</option><option value="high">High priority</option><option value="low">Low priority</option></select>
-        <select id="t-due"><option value="today">Today</option><option value="tomorrow">Tomorrow</option><option value="this week" selected>This week</option><option value="next week">Next week</option></select>
-        <button class="btn-primary" onclick="addTask()">Add</button>
-        <button class="btn-ghost" onclick="toggleEl('task-add-row')">Cancel</button>
-      </div>
-    </div>
+    <div class="section-header"><span class="section-title">All tasks</span><button class="btn-add" onclick="toggleEl('task-add-row')">+ Add task</button></div>
+    <div id="task-add-row" style="display:none;"><div class="add-row">
+      <input type="text" id="t-name" placeholder="Task name..." onkeydown="if(event.key==='Enter')addTask()" />
+      <select id="t-tag"><option value="ops">Ops</option><option value="product">Product</option><option value="growth">Growth</option><option value="eng">Engineering</option><option value="finance">Finance</option></select>
+      <select id="t-prio"><option value="mid">Mid priority</option><option value="high">High priority</option><option value="low">Low priority</option></select>
+      <select id="t-due"><option value="today">Today</option><option value="tomorrow">Tomorrow</option><option value="this week" selected>This week</option><option value="next week">Next week</option></select>
+      <button class="btn-primary" onclick="addTask()">Add</button>
+      <button class="btn-ghost" onclick="toggleEl('task-add-row')">Cancel</button>
+    </div></div>
     <div class="task-list">
-      ${tasks.map(t=>`
-        <div class="task-item${t.done?' done':''}">
-          <div class="task-check" onclick="toggleTask(${t.id})">
-            ${t.done?`<svg class="check-svg" viewBox="0 0 10 10"><polyline points="1.5,5 4,7.5 8.5,2.5"/></svg>`:''}
-          </div>
-          <div class="task-body" onclick="toggleTask(${t.id})">
-            <div class="task-name">${esc(t.name)}</div>
-            <div class="task-meta">
-              <span class="tag tag-${t.tag}">${tagLabels[t.tag]}</span>
-              <span class="task-due${t.due==='today'?' hot':''}">${esc(t.due)}</span>
-            </div>
-          </div>
-          <div class="prio-dot p-${t.priority}"></div>
-          <button class="btn-del" onclick="deleteTask(${t.id})" title="Delete task">✕</button>
-        </div>`).join('')||'<div class="empty">No tasks yet. Add one above.</div>'}
+      ${tasks.map(t=>`<div class="task-item${t.done?' done':''}">
+        <div class="task-check" onclick="toggleTask('${t.id}',${!t.done})">${t.done?'<svg class="check-svg" viewBox="0 0 10 10"><polyline points="1.5,5 4,7.5 8.5,2.5"/></svg>':''}</div>
+        <div class="task-body" onclick="toggleTask('${t.id}',${!t.done})">
+          <div class="task-name">${esc(t.name)}</div>
+          <div class="task-meta"><span class="tag tag-${t.tag}">${tagLabels[t.tag]||t.tag}</span><span class="task-due${t.due==='today'?' hot':''}">${esc(t.due)}</span></div>
+        </div>
+        <div class="prio-dot p-${t.priority}"></div>
+        <button class="btn-del" onclick="deleteTask('${t.id}')">&#x2715;</button>
+      </div>`).join('')||'<div class="empty">No tasks yet. Add one above.</div>'}
     </div>
     <div class="bottom-grid">
       <div class="card">
-        <div class="section-header" style="margin-bottom:6px;">
-          <span class="section-title">Sprint progress</span>
-          <span style="font-size:12px;color:var(--text-4);">${done} / ${total}</span>
-        </div>
+        <div class="section-header" style="margin-bottom:6px;"><span class="section-title">Sprint progress</span><span style="font-size:12px;color:var(--text-4);">${done} / ${total}</span></div>
         <div class="prog-bar"><div class="prog-fill" style="width:${pct}%"></div></div>
         <div style="font-size:11px;color:var(--text-4);margin-bottom:14px;">${pct===0?'Just getting started':`${pct}% complete`}</div>
         <div style="font-size:12px;font-weight:500;color:var(--text-3);margin-bottom:10px;">By area</div>
-        ${areas.map(a=>{
-          const tot=tasks.filter(t=>t.tag===a).length; if(!tot)return'';
-          const dn=tasks.filter(t=>t.tag===a&&t.done).length,p=Math.round(dn/tot*100);
-          return `<div style="margin-bottom:9px;"><div style="display:flex;justify-content:space-between;font-size:11px;color:var(--text-3);margin-bottom:3px;"><span>${areaNames[a]}</span><span>${dn}/${tot}</span></div><div class="prog-bar" style="margin:0;"><div style="height:100%;border-radius:10px;width:${p}%;background:${areaCol[a]};transition:width 0.4s;"></div></div></div>`;
-        }).join('')}
+        ${areas.map(a=>{const tot=tasks.filter(t=>t.tag===a).length;if(!tot)return'';const dn=tasks.filter(t=>t.tag===a&&t.done).length,p=Math.round(dn/tot*100);return`<div style="margin-bottom:9px;"><div style="display:flex;justify-content:space-between;font-size:11px;color:var(--text-3);margin-bottom:3px;"><span>${aN[a]}</span><span>${dn}/${tot}</span></div><div class="prog-bar" style="margin:0;"><div style="height:100%;border-radius:10px;width:${p}%;background:${aC[a]};transition:width 0.4s;"></div></div></div>`;}).join('')}
       </div>
       <div class="card">
         <div class="section-header" style="margin-bottom:8px;"><span class="section-title">Upcoming</span></div>
-        ${tasks.filter(t=>!t.done).slice(0,6).map(t=>`
-          <div class="mini-row">
-            <div class="prio-dot p-${t.priority}"></div>
-            <span style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${esc(t.name)}</span>
-            <span style="font-size:10px;color:var(--text-4);flex-shrink:0;margin-left:6px;">${esc(t.due)}</span>
-          </div>`).join('')||'<div class="empty">All done!</div>'}
+        ${tasks.filter(t=>!t.done).slice(0,6).map(t=>`<div class="mini-row"><div class="prio-dot p-${t.priority}"></div><span style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${esc(t.name)}</span><span style="font-size:10px;color:var(--text-4);flex-shrink:0;margin-left:6px;">${esc(t.due)}</span></div>`).join('')||'<div class="empty">All done!</div>'}
       </div>
     </div>`;
 }
 
-function addTask(){
-  const name=document.getElementById('t-name').value.trim(); if(!name)return;
-  tasks.push({id:taskId++,name,tag:document.getElementById('t-tag').value,priority:document.getElementById('t-prio').value,due:document.getElementById('t-due').value,done:false});
-  save('tasks',tasks); render();
-}
-function toggleTask(id){const t=tasks.find(x=>x.id===id);if(t){t.done=!t.done;save('tasks',tasks);render();}}
-function deleteTask(id){tasks=tasks.filter(t=>t.id!==id);save('tasks',tasks);render();}
+async function addTask(){const name=document.getElementById('t-name').value.trim();if(!name)return;setSyncing('syncing');await sb.from('tasks').insert({name,tag:document.getElementById('t-tag').value,priority:document.getElementById('t-prio').value,due:document.getElementById('t-due').value,done:false});setSyncing('ok');toggleEl('task-add-row');}
+async function toggleTask(id,done){setSyncing('syncing');await sb.from('tasks').update({done}).eq('id',id);setSyncing('ok');}
+async function deleteTask(id){setSyncing('syncing');await sb.from('tasks').delete().eq('id',id);setSyncing('ok');}
 
-// ── OKR ──
 function renderOKR(){
-  const allKrs=okrs.reduce((a,o)=>a+o.krs.length,0);
-  const doneKrs=okrs.reduce((a,o)=>a+o.krs.filter(k=>k.done).length,0);
-  const avgPct=okrs.length?Math.round(okrs.map(o=>{
-    const p=o.krs.reduce((a,k)=>a+Math.min(100,Math.round(k.current/k.target*100)),0);
-    return o.krs.length?Math.round(p/o.krs.length):0;
-  }).reduce((a,b)=>a+b,0)/okrs.length):0;
-  return `
-    <div class="metrics" style="grid-template-columns:repeat(3,1fr);">
-      <div class="metric teal-accent"><div class="metric-label">Objectives</div><div class="metric-value">${okrs.length}</div><div class="metric-sub">this quarter</div></div>
-      <div class="metric teal-accent"><div class="metric-label">Key results</div><div class="metric-value">${doneKrs} / ${allKrs}</div><div class="metric-sub good">completed</div></div>
-      <div class="metric teal-accent"><div class="metric-label">Avg progress</div><div class="metric-value">${avgPct}%</div><div class="metric-sub good">overall</div></div>
+  const allKrs=Object.values(krMap).flat();
+  const doneKrs=allKrs.filter(k=>k.done).length;
+  const avgPct=okrs.length?Math.round(okrs.map(o=>{const krs=krMap[o.id]||[];if(!krs.length)return 0;return Math.round(krs.reduce((a,k)=>a+Math.min(100,Math.round(k.current_val/k.target_val*100)),0)/krs.length);}).reduce((a,b)=>a+b,0)/okrs.length):0;
+  return `<div class="metrics" style="grid-template-columns:repeat(3,1fr);">
+    <div class="metric teal-accent"><div class="metric-label">Objectives</div><div class="metric-value">${okrs.length}</div><div class="metric-sub">this quarter</div></div>
+    <div class="metric teal-accent"><div class="metric-label">Key results</div><div class="metric-value">${doneKrs} / ${allKrs.length}</div><div class="metric-sub good">completed</div></div>
+    <div class="metric teal-accent"><div class="metric-label">Avg progress</div><div class="metric-value">${avgPct}%</div><div class="metric-sub good">overall</div></div>
     </div>
-    <div class="section-header">
-      <span class="section-title">Objectives</span>
-      <button class="btn-add" onclick="toggleEl('okr-add-row')">+ Add objective</button>
-    </div>
-    <div id="okr-add-row" style="display:none;">
-      <div class="add-row">
-        <input type="text" id="o-name" placeholder="Objective name…" style="flex:2;" />
-        <select id="o-term"><option value="short">Short-term</option><option value="medium">Medium-term</option><option value="long">Long-term</option></select>
-        <input type="date" id="o-deadline" style="min-width:140px;" />
-        <button class="btn-primary" onclick="addOKR()">Add</button>
-        <button class="btn-ghost" onclick="toggleEl('okr-add-row')">Cancel</button>
-      </div>
-    </div>
+    <div class="section-header"><span class="section-title">Objectives</span><button class="btn-add" onclick="toggleEl('okr-add-row')">+ Add objective</button></div>
+    <div id="okr-add-row" style="display:none;"><div class="add-row">
+      <input type="text" id="o-name" placeholder="Objective name..." style="flex:2;" />
+      <select id="o-term"><option value="short">Short-term</option><option value="medium">Medium-term</option><option value="long">Long-term</option></select>
+      <input type="date" id="o-deadline" style="min-width:140px;" />
+      <button class="btn-primary" onclick="addOKR()">Add</button>
+      <button class="btn-ghost" onclick="toggleEl('okr-add-row')">Cancel</button>
+    </div></div>
     <div class="okr-list">
       ${okrs.map(o=>{
-        const pct=o.krs.length?Math.round(o.krs.reduce((a,k)=>a+Math.min(100,Math.round(k.current/k.target*100)),0)/o.krs.length):0;
+        const krs=krMap[o.id]||[];
+        const pct=krs.length?Math.round(krs.reduce((a,k)=>a+Math.min(100,Math.round(k.current_val/k.target_val*100)),0)/krs.length):0;
         const dl=o.deadline?new Date(o.deadline).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}):'';
         return `<div class="okr-card">
-          <div class="okr-header">
-            <div class="okr-title">${esc(o.objective)}</div>
-            <div class="okr-right">
-              <div class="okr-pct">${pct}%</div>
-              <button class="btn-del" onclick="deleteOKR(${o.id})" title="Delete objective">✕</button>
-            </div>
-          </div>
-          <div class="okr-meta">
-            <span class="term-pill ${termClass[o.term]}">${termLabels[o.term]}</span>
-            ${dl?`<span class="deadline-chip">Due ${dl}</span>`:''}
-          </div>
+          <div class="okr-header"><div class="okr-title">${esc(o.objective)}</div><div class="okr-right"><div class="okr-pct">${pct}%</div><button class="btn-del" onclick="deleteOKR('${o.id}')">&#x2715;</button></div></div>
+          <div class="okr-meta"><span class="term-pill ${termClass[o.term]||''}">${termLabels[o.term]||o.term}</span>${dl?`<span class="deadline-chip">Due ${dl}</span>`:''}</div>
           <div class="prog-bar"><div class="prog-fill" style="width:${pct}%"></div></div>
           <div class="kr-list">
-            ${o.krs.map(k=>{
-              const kp=Math.min(100,Math.round(k.current/k.target*100));
-              return `<div class="kr-row${k.done?' done-kr':''}">
-                <div class="kr-check${k.done?' checked':''}" onclick="toggleKR(${o.id},${k.id})">
-                  ${k.done?`<svg class="kr-check-svg" viewBox="0 0 10 10"><polyline points="1.5,5 4,7.5 8.5,2.5"/></svg>`:''}
-                </div>
-                <div class="kr-body">
-                  <div class="kr-label-row"><span>${esc(k.label)}</span><span>${fmt(k.current)} / ${fmt(k.target)}</span></div>
-                  <div class="kr-bar"><div class="kr-fill ${k.status}" style="width:${kp}%"></div></div>
-                </div>
-                <button class="btn-del" onclick="deleteKR(${o.id},${k.id})" title="Delete key result">✕</button>
-              </div>`;
-            }).join('')||'<div style="font-size:12px;color:var(--text-4);padding:6px 0;">No key results yet.</div>'}
+            ${krs.map(k=>{const kp=Math.min(100,Math.round(k.current_val/k.target_val*100));return`<div class="kr-row${k.done?' done-kr':''}">
+              <div class="kr-check${k.done?' checked':''}" onclick="toggleKR('${k.id}',${!k.done})">${k.done?'<svg class="kr-check-svg" viewBox="0 0 10 10"><polyline points="1.5,5 4,7.5 8.5,2.5"/></svg>':''}</div>
+              <div class="kr-body"><div class="kr-label-row"><span>${esc(k.label)}</span><span>${fmt(k.current_val)} / ${fmt(k.target_val)}</span></div><div class="kr-bar"><div class="kr-fill ${k.status}" style="width:${kp}%"></div></div></div>
+              <button class="btn-del" onclick="deleteKR('${k.id}')">&#x2715;</button>
+            </div>`;}).join('')||'<div style="font-size:12px;color:var(--text-4);padding:6px 0;">No key results yet.</div>'}
           </div>
           <div class="okr-add-kr">
-            <input type="text" placeholder="Key result…" id="kr-lbl-${o.id}" style="flex:2;" />
+            <input type="text" placeholder="Key result..." id="kr-lbl-${o.id}" style="flex:2;" />
             <input type="number" placeholder="Current" id="kr-cur-${o.id}" style="width:90px;" />
             <input type="number" placeholder="Target" id="kr-tgt-${o.id}" style="width:90px;" />
             <select id="kr-sta-${o.id}"><option value="on-track">On track</option><option value="at-risk">At risk</option><option value="behind">Behind</option></select>
-            <button class="btn-sm" onclick="addKR(${o.id})">+ Key result</button>
+            <button class="btn-sm" onclick="addKR('${o.id}')">+ Key result</button>
           </div>
         </div>`;
       }).join('')||'<div class="empty" style="padding:24px 0;">No objectives yet. Add one above.</div>'}
@@ -625,157 +446,87 @@ function renderOKR(){
     </div>`;
 }
 
-function addOKR(){
-  const name=document.getElementById('o-name').value.trim(); if(!name)return;
-  okrs.push({id:okrId++,objective:name,term:document.getElementById('o-term').value,deadline:document.getElementById('o-deadline').value,krs:[]});
-  save('okrs',okrs); render();
-}
-function deleteOKR(id){okrs=okrs.filter(o=>o.id!==id);save('okrs',okrs);render();}
-function addKR(oid){
-  const o=okrs.find(x=>x.id===oid); if(!o)return;
-  const lbl=document.getElementById('kr-lbl-'+oid).value.trim(); if(!lbl)return;
-  const cur=parseFloat(document.getElementById('kr-cur-'+oid).value)||0;
-  const tgt=parseFloat(document.getElementById('kr-tgt-'+oid).value)||100;
-  const sta=document.getElementById('kr-sta-'+oid).value;
-  o.krs.push({id:krId++,label:lbl,current:cur,target:tgt,status:sta,done:false});
-  save('okrs',okrs); render();
-}
-function toggleKR(oid,kid){const o=okrs.find(x=>x.id===oid);if(!o)return;const k=o.krs.find(x=>x.id===kid);if(k){k.done=!k.done;save('okrs',okrs);render();}}
-function deleteKR(oid,kid){const o=okrs.find(x=>x.id===oid);if(!o)return;o.krs=o.krs.filter(k=>k.id!==kid);save('okrs',okrs);render();}
+async function addOKR(){const name=document.getElementById('o-name').value.trim();if(!name)return;setSyncing('syncing');await sb.from('okrs').insert({objective:name,term:document.getElementById('o-term').value,deadline:document.getElementById('o-deadline').value||null});setSyncing('ok');toggleEl('okr-add-row');}
+async function deleteOKR(id){setSyncing('syncing');await sb.from('okrs').delete().eq('id',id);setSyncing('ok');}
+async function addKR(oid){const lbl=document.getElementById('kr-lbl-'+oid).value.trim();if(!lbl)return;const cur=parseFloat(document.getElementById('kr-cur-'+oid).value)||0;const tgt=parseFloat(document.getElementById('kr-tgt-'+oid).value)||100;const sta=document.getElementById('kr-sta-'+oid).value;setSyncing('syncing');await sb.from('key_results').insert({okr_id:oid,label:lbl,current_val:cur,target_val:tgt,status:sta,done:false});setSyncing('ok');}
+async function toggleKR(id,done){setSyncing('syncing');await sb.from('key_results').update({done}).eq('id',id);setSyncing('ok');}
+async function deleteKR(id){setSyncing('syncing');await sb.from('key_results').delete().eq('id',id);setSyncing('ok');}
 
-// ── BUDGET ──
 function renderBudget(){
-  const alloc=budget.items.reduce((a,b)=>a+b.amount,0);
-  const rem=budget.total-alloc;
-  const pct=budget.total?Math.min(100,Math.round(alloc/budget.total*100)):0;
-  const cats=[...new Set(budget.items.map(b=>b.category))];
-  return `
-    <div class="budget-header-row">
-      <div style="flex:1;">
-        <div class="budget-total-label">Total budget</div>
-        <input class="budget-total-input" type="number" value="${budget.total}" onchange="setBudgetTotal(this.value)" placeholder="Enter total budget (₱)" />
-      </div>
-      <div style="text-align:right;">
-        <div class="budget-total-label">Allocated</div>
-        <div style="font-family:var(--font-display);font-size:20px;color:#8FC4A8;">₱${fmt(alloc)}</div>
-      </div>
-      <div style="text-align:right;">
-        <div class="budget-total-label">Remaining</div>
-        <div style="font-family:var(--font-display);font-size:20px;color:${rem<0?'#C0704A':'var(--sand)'};">₱${fmt(rem)}</div>
-      </div>
+  const alloc=budgetItems.reduce((a,b)=>a+b.amount,0);
+  const rem=budgetTotal-alloc;
+  const pct=budgetTotal?Math.min(100,Math.round(alloc/budgetTotal*100)):0;
+  const cats=[...new Set(budgetItems.map(b=>b.category))];
+  return `<div class="budget-header-row">
+    <div style="flex:1;"><div class="budget-total-label">Total budget</div><input class="budget-total-input" type="number" value="${budgetTotal}" onchange="setBudgetTotal(this.value)" placeholder="Enter total budget" /></div>
+    <div style="text-align:right;"><div class="budget-total-label">Allocated</div><div style="font-family:var(--font-display);font-size:20px;color:#8FC4A8;">&#8369;${fmt(alloc)}</div></div>
+    <div style="text-align:right;"><div class="budget-total-label">Remaining</div><div style="font-family:var(--font-display);font-size:20px;color:${rem<0?'#C0704A':'var(--sand)'};">&#8369;${fmt(rem)}</div></div>
     </div>
     <div class="metrics" style="grid-template-columns:repeat(3,1fr);margin-bottom:12px;">
-      <div class="metric teal-accent"><div class="metric-label">Total budget</div><div class="metric-value">₱${fmt(budget.total)}</div></div>
-      <div class="metric teal-accent"><div class="metric-label">Allocated</div><div class="metric-value">₱${fmt(alloc)}</div><div class="metric-sub">${pct}% of budget</div></div>
-      <div class="metric teal-accent"><div class="metric-label">Remaining</div><div class="metric-value" style="color:${rem<0?'#C0704A':'var(--sand)'};">₱${fmt(rem)}</div><div class="metric-sub${rem<0?' warn':' good'}">${rem<0?'Over budget':'Available'}</div></div>
+      <div class="metric teal-accent"><div class="metric-label">Total budget</div><div class="metric-value">&#8369;${fmt(budgetTotal)}</div></div>
+      <div class="metric teal-accent"><div class="metric-label">Allocated</div><div class="metric-value">&#8369;${fmt(alloc)}</div><div class="metric-sub">${pct}% of budget</div></div>
+      <div class="metric teal-accent"><div class="metric-label">Remaining</div><div class="metric-value" style="color:${rem<0?'#C0704A':'var(--sand)'};">&#8369;${fmt(rem)}</div><div class="metric-sub${rem<0?' warn':' good'}">${rem<0?'Over budget':'Available'}</div></div>
     </div>
     <div class="prog-bar" style="height:6px;margin-bottom:4px;"><div class="prog-fill" style="width:${pct}%;background:${pct>=100?'#C0704A':'var(--teal-light)'};"></div></div>
-    <div style="font-size:11px;color:var(--text-4);margin-bottom:20px;">${pct}% allocated · ${budget.items.length} line items</div>
-    <div class="section-header">
-      <span class="section-title">Budget items</span>
-      <button class="btn-add" onclick="toggleEl('budget-add-row')">+ Add item</button>
-    </div>
-    <div id="budget-add-row" style="display:none;">
-      <div class="add-row">
-        <input type="text" id="b-name" placeholder="Item name…" />
-        <input type="number" id="b-amt" placeholder="Amount (₱)" style="width:130px;" />
-        <input type="text" id="b-cat" placeholder="Category" style="width:130px;" />
-        <input type="text" id="b-note" placeholder="Note (optional)" style="width:130px;" />
-        <button class="btn-primary" onclick="addBudgetItem()">Add</button>
-        <button class="btn-ghost" onclick="toggleEl('budget-add-row')">Cancel</button>
-      </div>
-    </div>
+    <div style="font-size:11px;color:var(--text-4);margin-bottom:20px;">${pct}% allocated &middot; ${budgetItems.length} line items</div>
+    <div class="section-header"><span class="section-title">Budget items</span><button class="btn-add" onclick="toggleEl('budget-add-row')">+ Add item</button></div>
+    <div id="budget-add-row" style="display:none;"><div class="add-row">
+      <input type="text" id="b-name" placeholder="Item name..." />
+      <input type="number" id="b-amt" placeholder="Amount" style="width:130px;" />
+      <input type="text" id="b-cat" placeholder="Category" style="width:130px;" />
+      <input type="text" id="b-note" placeholder="Note (optional)" style="width:130px;" />
+      <button class="btn-primary" onclick="addBudgetItem()">Add</button>
+      <button class="btn-ghost" onclick="toggleEl('budget-add-row')">Cancel</button>
+    </div></div>
     ${cats.map(cat=>{
-      const items=budget.items.filter(b=>b.category===cat);
+      const items=budgetItems.filter(b=>b.category===cat);
       const catTotal=items.reduce((a,b)=>a+b.amount,0);
-      const catPct=budget.total?Math.round(catTotal/budget.total*100):0;
-      return `<div class="cat-section">
-        <div class="cat-header"><span class="cat-name">${esc(cat)}</span><span class="cat-total">₱${fmt(catTotal)} · ${catPct}% of budget</span></div>
-        ${items.map(b=>`
-          <div class="budget-item">
-            <div style="flex:1;">
-              <div class="b-name">${esc(b.name)}</div>
-              ${b.note?`<div class="b-note">${esc(b.note)}</div>`:''}
-              <div class="alloc-bar"><div class="alloc-fill" style="width:${budget.total?Math.min(100,Math.round(b.amount/budget.total*100)):0}%;"></div></div>
-            </div>
-            <div class="b-amt">₱${fmt(b.amount)}</div>
-            <button class="btn-del" onclick="deleteBudgetItem(${b.id})" title="Remove item">✕</button>
-          </div>`).join('')}
+      const catPct=budgetTotal?Math.round(catTotal/budgetTotal*100):0;
+      return`<div class="cat-section"><div class="cat-header"><span class="cat-name">${esc(cat)}</span><span class="cat-total">&#8369;${fmt(catTotal)} &middot; ${catPct}% of budget</span></div>
+        ${items.map(b=>`<div class="budget-item"><div style="flex:1;"><div class="b-name">${esc(b.name)}</div>${b.note?`<div class="b-note">${esc(b.note)}</div>`:''}<div class="alloc-bar"><div class="alloc-fill" style="width:${budgetTotal?Math.min(100,Math.round(b.amount/budgetTotal*100)):0}%;"></div></div></div><div class="b-amt">&#8369;${fmt(b.amount)}</div><button class="btn-del" onclick="deleteBudgetItem('${b.id}')">&#x2715;</button></div>`).join('')}
       </div>`;
     }).join('')||'<div class="empty" style="padding:24px 0;">No items yet. Add one above.</div>'}`;
 }
 
-function setBudgetTotal(v){budget.total=parseFloat(v)||0;save('budget',budget);}
-function addBudgetItem(){
-  const name=document.getElementById('b-name').value.trim();
-  const amt=parseFloat(document.getElementById('b-amt').value);
-  if(!name||isNaN(amt))return;
-  const cat=document.getElementById('b-cat').value.trim()||'General';
-  const note=document.getElementById('b-note').value.trim();
-  budget.items.push({id:budgetItemId++,name,category:cat,amount:amt,note});
-  save('budget',budget); render();
-}
-function deleteBudgetItem(id){budget.items=budget.items.filter(b=>b.id!==id);save('budget',budget);render();}
+async function setBudgetTotal(v){setSyncing('syncing');if(budgetRowId){await sb.from('budget').update({total_budget:parseFloat(v)||0}).eq('id',budgetRowId);}else{const{data}=await sb.from('budget').insert({total_budget:parseFloat(v)||0}).select().single();budgetRowId=data?.id;}setSyncing('ok');}
+async function addBudgetItem(){const name=document.getElementById('b-name').value.trim();const amt=parseFloat(document.getElementById('b-amt').value);if(!name||isNaN(amt))return;setSyncing('syncing');await sb.from('budget_items').insert({name,category:document.getElementById('b-cat').value.trim()||'General',amount:amt,note:document.getElementById('b-note').value.trim()});setSyncing('ok');toggleEl('budget-add-row');}
+async function deleteBudgetItem(id){setSyncing('syncing');await sb.from('budget_items').delete().eq('id',id);setSyncing('ok');}
 
-// ── CRM ──
 function renderCRM(){
-  return `
-    <div class="metrics">
-      <div class="metric teal-accent"><div class="metric-label">Total</div><div class="metric-value">${contacts.length}</div></div>
-      <div class="metric teal-accent"><div class="metric-label">Investors</div><div class="metric-value">${contacts.filter(c=>c.status==='investor').length}</div></div>
-      <div class="metric teal-accent"><div class="metric-label">Customers</div><div class="metric-value">${contacts.filter(c=>c.status==='customer').length}</div></div>
-      <div class="metric teal-accent"><div class="metric-label">Leads</div><div class="metric-value">${contacts.filter(c=>c.status==='lead').length}</div></div>
+  return`<div class="metrics">
+    <div class="metric teal-accent"><div class="metric-label">Total</div><div class="metric-value">${contacts.length}</div></div>
+    <div class="metric teal-accent"><div class="metric-label">Investors</div><div class="metric-value">${contacts.filter(c=>c.status==='investor').length}</div></div>
+    <div class="metric teal-accent"><div class="metric-label">Customers</div><div class="metric-value">${contacts.filter(c=>c.status==='customer').length}</div></div>
+    <div class="metric teal-accent"><div class="metric-label">Leads</div><div class="metric-value">${contacts.filter(c=>c.status==='lead').length}</div></div>
     </div>
-    <div class="section-header">
-      <span class="section-title">All contacts</span>
-      <button class="btn-add" onclick="toggleEl('contact-add-row')">+ Add contact</button>
-    </div>
-    <div id="contact-add-row" style="display:none;">
-      <div class="add-row">
-        <input type="text" id="c-name" placeholder="Full name" />
-        <input type="text" id="c-role" placeholder="Role / title" />
-        <input type="text" id="c-company" placeholder="Company" />
-        <input type="email" id="c-email" placeholder="Email" />
-        <select id="c-status">
-          <option value="lead">Lead</option>
-          <option value="customer">Customer</option>
-          <option value="investor">Investor</option>
-          <option value="partner">Partner</option>
-          <option value="vendor">Vendor</option>
-        </select>
-        <button class="btn-primary" onclick="addContact()">Add</button>
-        <button class="btn-ghost" onclick="toggleEl('contact-add-row')">Cancel</button>
-      </div>
-    </div>
+    <div class="section-header"><span class="section-title">All contacts</span><button class="btn-add" onclick="toggleEl('contact-add-row')">+ Add contact</button></div>
+    <div id="contact-add-row" style="display:none;"><div class="add-row">
+      <input type="text" id="c-name" placeholder="Full name" />
+      <input type="text" id="c-role" placeholder="Role / title" />
+      <input type="text" id="c-company" placeholder="Company" />
+      <input type="email" id="c-email" placeholder="Email" />
+      <select id="c-status"><option value="lead">Lead</option><option value="customer">Customer</option><option value="investor">Investor</option><option value="partner">Partner</option><option value="vendor">Vendor</option></select>
+      <button class="btn-primary" onclick="addContact()">Add</button>
+      <button class="btn-ghost" onclick="toggleEl('contact-add-row')">Cancel</button>
+    </div></div>
     <div class="contact-grid">
-      ${contacts.map((c,i)=>{
-        const av=aColors[i%aColors.length];
-        return `<div class="contact-card">
-          <button class="card-del" onclick="deleteContact(${c.id})" title="Delete contact">✕</button>
-          <div class="contact-top">
-            <div class="c-avatar" style="background:${av.bg};color:${av.color};">${initials(c.name)}</div>
-            <div><div class="c-name">${esc(c.name)}</div><div class="c-role">${esc(c.role)}</div></div>
-          </div>
-          <div class="c-details">
-            <div class="c-detail-row"><svg width="11" height="11" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="4" width="12" height="9" rx="1"/><path d="M2 4l6 5 6-5"/></svg>${esc(c.email)}</div>
-            <div class="c-detail-row"><svg width="11" height="11" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="2" width="10" height="12" rx="2"/><circle cx="8" cy="11" r="0.8" fill="currentColor"/></svg>${esc(c.company)}</div>
-          </div>
-          <span class="status-pill ${statusClass[c.status]}">${statusLabels[c.status]}</span>
-        </div>`;
-      }).join('')||'<div class="empty" style="padding:24px 0;grid-column:1/-1;">No contacts yet.</div>'}
+      ${contacts.map((c,i)=>{const av=aColors[i%aColors.length];return`<div class="contact-card">
+        <button class="card-del" onclick="deleteContact('${c.id}')">&#x2715;</button>
+        <div class="contact-top"><div class="c-avatar" style="background:${av.bg};color:${av.color};">${initials(c.name)}</div><div><div class="c-name">${esc(c.name)}</div><div class="c-role">${esc(c.role)}</div></div></div>
+        <div class="c-details">
+          <div class="c-detail-row"><svg width="11" height="11" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="4" width="12" height="9" rx="1"/><path d="M2 4l6 5 6-5"/></svg>${esc(c.email)}</div>
+          <div class="c-detail-row"><svg width="11" height="11" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="2" width="10" height="12" rx="2"/><circle cx="8" cy="11" r="0.8" fill="currentColor"/></svg>${esc(c.company)}</div>
+        </div>
+        <span class="status-pill ${statusClass[c.status]||''}">${statusLabels[c.status]||c.status}</span>
+      </div>`;}).join('')||'<div class="empty" style="padding:24px 0;grid-column:1/-1;">No contacts yet.</div>'}
     </div>`;
 }
 
-function addContact(){
-  const name=document.getElementById('c-name').value.trim(); if(!name)return;
-  contacts.push({id:contactId++,name,role:document.getElementById('c-role').value.trim()||'—',company:document.getElementById('c-company').value.trim()||'—',email:document.getElementById('c-email').value.trim()||'—',status:document.getElementById('c-status').value});
-  save('contacts',contacts); render();
-}
-function deleteContact(id){contacts=contacts.filter(c=>c.id!==id);save('contacts',contacts);render();}
+async function addContact(){const name=document.getElementById('c-name').value.trim();if(!name)return;setSyncing('syncing');await sb.from('contacts').insert({name,role:document.getElementById('c-role').value.trim()||'—',company:document.getElementById('c-company').value.trim()||'—',email:document.getElementById('c-email').value.trim()||'—',status:document.getElementById('c-status').value});setSyncing('ok');toggleEl('contact-add-row');}
+async function deleteContact(id){setSyncing('syncing');await sb.from('contacts').delete().eq('id',id);setSyncing('ok');}
 
-// ── INIT ──
 document.getElementById('today-date').textContent=new Date().toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric',year:'numeric'});
-render();
+loadAll().then(()=>subscribeRealtime());
 </script>
 </body>
 </html>
