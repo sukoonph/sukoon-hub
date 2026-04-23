@@ -319,11 +319,11 @@ const pageTitles={home:'Home',tasks:'Tasks',okr:'Goals & OKRs',budget:'Budget Pl
 
 async function loadAll(){
   try{
-    const[t,o,kr,b,bi,c]=await Promise.all([
+    const[t,o,kr,b,bi,c,loc]=await Promise.all([
       sb.from('tasks').select('*').order('created_at'),
       sb.from('okrs').select('*').order('created_at'),
       sb.from('key_results').select('*').order('created_at'),
-      sb.from('budget').select('*').limit(1).single(),
+      sb.from('budget').select('*').limit(1),
       sb.from('budget_items').select('*').order('created_at'),
       sb.from('contacts').select('*').order('created_at'),
       sb.from('locations').select('*').order('created_at'),
@@ -331,14 +331,18 @@ async function loadAll(){
     tasks=t.data||[];
     okrs=o.data||[];
     krMap={};(kr.data||[]).forEach(k=>{if(!krMap[k.okr_id])krMap[k.okr_id]=[];krMap[k.okr_id].push(k);});
-    budgetRowId=b.data?.id||null;
-    budgetTotal=b.data?.total_budget||0;
+    const budgetRow=(b.data&&b.data.length>0)?b.data[0]:null;
+    budgetRowId=budgetRow?.id||null;
+    budgetTotal=budgetRow?.total_budget||0;
     budgetItems=bi.data||[];
     contacts=c.data||[];
-    const loc=await sb.from('locations').select('*').order('created_at');
     locations=loc.data||[];
     render();
-  }catch(e){setSyncing('error');console.error(e);}
+  }catch(e){
+    setSyncing('error');
+    console.error('loadAll error:',e);
+    document.getElementById('content').innerHTML='<div class="loading-screen"><div style="color:#C0704A;font-size:13px;">Connection error. Please refresh the page.</div></div>';
+  }
 }
 
 function subscribeRealtime(){
@@ -357,7 +361,7 @@ async function reload(table){
   if(table==='tasks'){const{data}=await sb.from('tasks').select('*').order('created_at');tasks=data||[];}
   if(table==='okrs'){const{data}=await sb.from('okrs').select('*').order('created_at');okrs=data||[];}
   if(table==='krs'){const{data}=await sb.from('key_results').select('*').order('created_at');krMap={};(data||[]).forEach(k=>{if(!krMap[k.okr_id])krMap[k.okr_id]=[];krMap[k.okr_id].push(k);});}
-  if(table==='budget'){const{data}=await sb.from('budget').select('*').limit(1).single();budgetRowId=data?.id||null;budgetTotal=data?.total_budget||0;}
+  if(table==='budget'){const{data}=await sb.from('budget').select('*').limit(1);const row=(data&&data.length>0)?data[0]:null;budgetRowId=row?.id||null;budgetTotal=row?.total_budget||0;}
   if(table==='budget_items'){const{data}=await sb.from('budget_items').select('*').order('created_at');budgetItems=data||[];}
   if(table==='contacts'){const{data}=await sb.from('contacts').select('*').order('created_at');contacts=data||[];}
   if(table==='locations'){const{data}=await sb.from('locations').select('*').order('created_at');locations=data||[];}
@@ -606,7 +610,7 @@ function renderBudget(){
     }).join('')||'<div class="empty" style="padding:24px 0;">No items yet. Add one above.</div>'}`;
 }
 
-async function setBudgetTotal(v){setSyncing('syncing');if(budgetRowId){await sb.from('budget').update({total_budget:parseFloat(v)||0}).eq('id',budgetRowId);}else{const{data}=await sb.from('budget').insert({total_budget:parseFloat(v)||0}).select().single();budgetRowId=data?.id;}await reload('budget');setSyncing('ok');}
+async function setBudgetTotal(v){setSyncing('syncing');if(budgetRowId){await sb.from('budget').update({total_budget:parseFloat(v)||0}).eq('id',budgetRowId);}else{const res=await sb.from('budget').insert({total_budget:parseFloat(v)||0}).select();budgetRowId=res.data&&res.data[0]?res.data[0].id:null;}await reload('budget');setSyncing('ok');}
 async function addBudgetItem(){const name=document.getElementById('b-name').value.trim();const amt=parseFloat(document.getElementById('b-amt').value);if(!name||isNaN(amt))return;setSyncing('syncing');await sb.from('budget_items').insert({name,category:document.getElementById('b-cat').value.trim()||'General',amount:amt,note:document.getElementById('b-note').value.trim()});await reload('budget_items');setSyncing('ok');toggleEl('budget-add-row');}
 async function deleteBudgetItem(id){setSyncing('syncing');await sb.from('budget_items').delete().eq('id',id);await reload('budget_items');setSyncing('ok');}
 
