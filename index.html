@@ -232,6 +232,17 @@ body{font-family:var(--font-body);background:var(--bg);color:var(--text-1);displ
 .price-mode-toggle{display:flex;gap:6px;margin-bottom:10px;}
 .pm-btn{font-size:11px;font-family:var(--font-body);padding:4px 10px;background:none;border:0.5px solid var(--border);border-radius:var(--radius);color:var(--text-3);cursor:pointer;transition:all 0.12s;}
 .pm-btn.active{background:var(--teal-faint2);color:#8FC4A8;border-color:var(--border-teal);}
+
+.add-row-date{color:var(--text-2);cursor:pointer;}
+.add-row-date::-webkit-calendar-picker-indicator{filter:invert(0.5);}
+.completed-section{margin-top:8px;}
+.completed-toggle{display:flex;align-items:center;gap:8px;cursor:pointer;padding:8px 0;color:var(--text-3);font-size:12px;user-select:none;border-top:0.5px solid var(--border);margin-bottom:6px;}
+.completed-toggle:hover{color:var(--text-2);}
+.toggle-arrow{font-size:10px;transition:transform 0.2s;}
+.toggle-arrow.open{transform:rotate(90deg);}
+.task-due-date{font-size:11px;color:var(--text-4);}
+.task-due-date.overdue{color:#C0704A;}
+.task-due-date.today{color:var(--brass-light);}
 ::-webkit-scrollbar{width:5px;}
 ::-webkit-scrollbar-track{background:transparent;}
 ::-webkit-scrollbar-thumb{background:var(--surface-2);border-radius:10px;}
@@ -385,7 +396,7 @@ function renderHome(){
   const hour=new Date().getHours();
   const greet=hour<12?'Good morning':hour<17?'Good afternoon':'Good evening';
   const pending=tasks.filter(t=>!t.done).length;
-  const todayT=tasks.filter(t=>t.due==='today'&&!t.done).length;
+  const todayT=tasks.filter(t=>t.due===new Date().toISOString().split('T')[0]&&!t.done).length;
   const alloc=budgetItems.reduce((a,b)=>a+b.amount,0);
   const rem=budgetTotal-alloc;
   const avgOkr=okrs.length?Math.round(okrs.map(o=>{const krs=krMap[o.id]||[];if(!krs.length)return 0;return Math.round(krs.reduce((a,k)=>a+Math.min(100,Math.round(k.current_val/k.target_val*100)),0)/krs.length);}).reduce((a,b)=>a+b,0)/okrs.length):0;
@@ -407,7 +418,7 @@ function renderHome(){
     </div>
     <div class="section-header"><span class="section-title">Today's priorities</span></div>
     <div style="display:flex;flex-direction:column;gap:5px;">
-      ${tasks.filter(t=>!t.done&&t.due==='today').map(t=>`<div class="mini-row"><div class="prio-dot p-${t.priority}"></div><span style="flex:1;color:var(--text-2);">${esc(t.name)}</span><span class="tag tag-${t.tag}">${tagLabels[t.tag]||t.tag}</span></div>`).join('')||'<div class="empty">Nothing due today.</div>'}
+      ${tasks.filter(t=>!t.done&&t.due===new Date().toISOString().split('T')[0]).map(t=>`<div class="mini-row"><div class="prio-dot p-${t.priority}"></div><span style="flex:1;color:var(--text-2);">${esc(t.name)}</span><span class="tag tag-${t.tag}">${tagLabels[t.tag]||t.tag}</span></div>`).join('')||'<div class="empty">Nothing due today.</div>'}
     </div>`;
 }
 
@@ -415,52 +426,91 @@ function renderTasks(){
   const total=tasks.length,done=tasks.filter(t=>t.done).length;
   const pct=total?Math.round(done/total*100):0;
   const high=tasks.filter(t=>t.priority==='high'&&!t.done).length;
-  const today=tasks.filter(t=>t.due==='today'&&!t.done).length;
   const areas=['product','growth','ops','eng','finance'];
   const aN={product:'Product',growth:'Growth',ops:'Operations',eng:'Engineering',finance:'Finance'};
   const aC={product:'#5C9E7A',growth:'#B08D57',ops:'#C0704A',eng:'#5A8FA0',finance:'#A89060'};
-  return `<div class="metrics">
-    <div class="metric"><div class="metric-label">Total</div><div class="metric-value">${total}</div><div class="metric-sub">tasks</div></div>
-    <div class="metric"><div class="metric-label">Completed</div><div class="metric-value">${done}</div><div class="metric-sub good">${pct}% done</div></div>
-    <div class="metric"><div class="metric-label">High priority</div><div class="metric-value">${high}</div><div class="metric-sub${high>0?' warn':''}">open</div></div>
-    <div class="metric"><div class="metric-label">Due today</div><div class="metric-value">${today}</div><div class="metric-sub">remaining</div></div>
-    </div>
-    <div class="section-header"><span class="section-title">All tasks</span><button class="btn-add" onclick="toggleEl('task-add-row')">+ Add task</button></div>
-    <div id="task-add-row" style="display:none;"><div class="add-row">
-      <input autocomplete="off" type="text" id="t-name" placeholder="Task name..." onkeydown="if(event.key==='Enter')addTask()" />
-      <select id="t-tag"><option value="ops">Ops</option><option value="product">Product</option><option value="growth">Growth</option><option value="eng">Engineering</option><option value="finance">Finance</option></select>
-      <select id="t-prio"><option value="mid">Mid priority</option><option value="high">High priority</option><option value="low">Low priority</option></select>
-      <select id="t-due"><option value="today">Today</option><option value="tomorrow">Tomorrow</option><option value="this week" selected>This week</option><option value="next week">Next week</option></select>
-      <button class="btn-primary" onclick="addTask()">Add</button>
-      <button class="btn-ghost" onclick="toggleEl('task-add-row')">Cancel</button>
-    </div></div>
-    <div class="task-list">
-      ${tasks.map(t=>`<div class="task-item${t.done?' done':''}">
-        <div class="task-check" onclick="toggleTask('${t.id}',${!t.done})">${t.done?'<svg class="check-svg" viewBox="0 0 10 10"><polyline points="1.5,5 4,7.5 8.5,2.5"/></svg>':''}</div>
-        <div class="task-body" onclick="toggleTask('${t.id}',${!t.done})">
-          <div class="task-name">${esc(t.name)}</div>
-          <div class="task-meta"><span class="tag tag-${t.tag}">${tagLabels[t.tag]||t.tag}</span><span class="task-due${t.due==='today'?' hot':''}">${esc(t.due)}</span></div>
-        </div>
-        <div class="prio-dot p-${t.priority}"></div>
-        <button class="btn-del" onclick="deleteTask('${t.id}')">&#x2715;</button>
-      </div>`).join('')||'<div class="empty">No tasks yet. Add one above.</div>'}
-    </div>
-    <div class="bottom-grid">
-      <div class="card">
-        <div class="section-header" style="margin-bottom:6px;"><span class="section-title">Sprint progress</span><span style="font-size:12px;color:var(--text-4);">${done} / ${total}</span></div>
-        <div class="prog-bar"><div class="prog-fill" style="width:${pct}%"></div></div>
-        <div style="font-size:11px;color:var(--text-4);margin-bottom:14px;">${pct===0?'Just getting started':`${pct}% complete`}</div>
-        <div style="font-size:12px;font-weight:500;color:var(--text-3);margin-bottom:10px;">By area</div>
-        ${areas.map(a=>{const tot=tasks.filter(t=>t.tag===a).length;if(!tot)return'';const dn=tasks.filter(t=>t.tag===a&&t.done).length,p=Math.round(dn/tot*100);return`<div style="margin-bottom:9px;"><div style="display:flex;justify-content:space-between;font-size:11px;color:var(--text-3);margin-bottom:3px;"><span>${aN[a]}</span><span>${dn}/${tot}</span></div><div class="prog-bar" style="margin:0;"><div style="height:100%;border-radius:10px;width:${p}%;background:${aC[a]};transition:width 0.4s;"></div></div></div>`;}).join('')}
-      </div>
-      <div class="card">
-        <div class="section-header" style="margin-bottom:8px;"><span class="section-title">Upcoming</span></div>
-        ${tasks.filter(t=>!t.done).slice(0,6).map(t=>`<div class="mini-row"><div class="prio-dot p-${t.priority}"></div><span style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${esc(t.name)}</span><span style="font-size:10px;color:var(--text-4);flex-shrink:0;margin-left:6px;">${esc(t.due)}</span></div>`).join('')||'<div class="empty">All done!</div>'}
-      </div>
-    </div>`;
+  const todayStr=new Date().toISOString().split('T')[0];
+
+  const active=tasks.filter(t=>!t.done).sort((a,b)=>{
+    if(!a.due&&!b.due)return 0; if(!a.due)return 1; if(!b.due)return -1;
+    return new Date(a.due)-new Date(b.due);
+  });
+  const completed=tasks.filter(t=>t.done);
+  const todayCount=active.filter(t=>t.due===todayStr).length;
+
+  function dueBadge(due){
+    if(!due)return '<span class="task-due-date">No date set</span>';
+    const isToday=due===todayStr;
+    const isPast=due<todayStr;
+    const d=new Date(due+'T00:00:00');
+    const label=d.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});
+    if(isToday)return '<span class="task-due-date today">Today \u00b7 '+label+'</span>';
+    if(isPast)return '<span class="task-due-date overdue">Overdue \u00b7 '+label+'</span>';
+    return '<span class="task-due-date">'+label+'</span>';
+  }
+
+  function taskRow(t){
+    return '<div class="task-item'+(t.done?' done':'')+'">'+
+      '<div class="task-check" onclick="toggleTask(\''+t.id+'\','+(t.done?'false':'true')+')">'+
+      (t.done?'<svg class="check-svg" viewBox="0 0 10 10"><polyline points="1.5,5 4,7.5 8.5,2.5"/></svg>':'')+
+      '</div>'+
+      '<div class="task-body" onclick="toggleTask(\''+t.id+'\','+(t.done?'false':'true')+')">'+
+      '<div class="task-name">'+esc(t.name)+'</div>'+
+      '<div class="task-meta"><span class="tag tag-'+t.tag+'">'+(tagLabels[t.tag]||t.tag)+'</span>'+dueBadge(t.due)+'</div>'+
+      '</div>'+
+      '<div class="prio-dot p-'+t.priority+'"></div>'+
+      '<button class="btn-del" onclick="deleteTask(\''+t.id+'\')">&#x2715;</button>'+
+      '</div>';
+  }
+
+  const activeHTML=active.length?active.map(taskRow).join(''):'<div class="empty">No active tasks. Add one above.</div>';
+  const completedHTML=completed.length?completed.map(taskRow).join(''):'<div class="empty">Nothing completed yet.</div>';
+
+  const areaBreakdown=areas.map(a=>{
+    const tot=tasks.filter(t=>t.tag===a).length; if(!tot)return'';
+    const dn=tasks.filter(t=>t.tag===a&&t.done).length,p=Math.round(dn/tot*100);
+    return '<div style="margin-bottom:9px;"><div style="display:flex;justify-content:space-between;font-size:11px;color:var(--text-3);margin-bottom:3px;"><span>'+aN[a]+'</span><span>'+dn+'/'+tot+'</span></div><div class="prog-bar" style="margin:0;"><div style="height:100%;border-radius:10px;width:'+p+'%;background:'+aC[a]+';transition:width 0.4s;"></div></div></div>';
+  }).join('');
+
+  const upcomingHTML=active.slice(0,6).map(t=>'<div class="mini-row"><div class="prio-dot p-'+t.priority+'"></div><span style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">'+esc(t.name)+'</span>'+dueBadge(t.due)+'</div>').join('')||'<div class="empty">All done!</div>';
+
+  return '<div class="metrics">'+
+    '<div class="metric"><div class="metric-label">Total</div><div class="metric-value">'+total+'</div><div class="metric-sub">tasks</div></div>'+
+    '<div class="metric"><div class="metric-label">Completed</div><div class="metric-value">'+done+'</div><div class="metric-sub good">'+pct+'% done</div></div>'+
+    '<div class="metric"><div class="metric-label">High priority</div><div class="metric-value">'+high+'</div><div class="metric-sub'+(high>0?' warn':'')+'">open</div></div>'+
+    '<div class="metric"><div class="metric-label">Due today</div><div class="metric-value">'+todayCount+'</div><div class="metric-sub">remaining</div></div>'+
+    '</div>'+
+    '<div class="section-header"><span class="section-title">Active tasks</span><button class="btn-add" onclick="toggleEl(\'task-add-row\')">+ Add task</button></div>'+
+    '<div id="task-add-row" style="display:none;"><div class="add-row">'+
+    '<input type="text" id="t-name" autocomplete="off" placeholder="Task name..." onkeydown="if(event.key===\'Enter\')addTask()" />'+
+    '<select id="t-tag"><option value="ops">Ops</option><option value="product">Product</option><option value="growth">Growth</option><option value="eng">Engineering</option><option value="finance">Finance</option></select>'+
+    '<select id="t-prio"><option value="mid">Mid priority</option><option value="high">High priority</option><option value="low">Low priority</option></select>'+
+    '<input autocomplete="off" type="date" id="t-due" class="add-row-date" style="width:140px;" />'+
+    '<button class="btn-primary" onclick="addTask()">Add</button>'+
+    '<button class="btn-ghost" onclick="toggleEl(\'task-add-row\')">Cancel</button>'+
+    '</div></div>'+
+    '<div class="task-list">'+activeHTML+'</div>'+
+    '<div class="completed-section">'+
+    '<div class="completed-toggle" onclick="window._compOpen=!window._compOpen;render();">'+
+    '<span style="font-size:10px;transition:transform 0.2s;display:inline-block;transform:rotate('+(window?'':'0')+'deg)">&#9654;</span>'+
+    '&nbsp;Completed ('+completed.length+')</div>'+
+    (typeof window!==\'undefined\'&&window._compOpen?'<div class="task-list">'+completedHTML+'</div>':'')+
+    '</div>'+
+    '<div class="bottom-grid">'+
+    '<div class="card">'+
+    '<div class="section-header" style="margin-bottom:6px;"><span class="section-title">Sprint progress</span><span style="font-size:12px;color:var(--text-4);">'+done+' / '+total+'</span></div>'+
+    '<div class="prog-bar"><div class="prog-fill" style="width:'+pct+'%"></div></div>'+
+    '<div style="font-size:11px;color:var(--text-4);margin-bottom:14px;">'+(pct===0?'Just getting started':pct+'% complete')+'</div>'+
+    '<div style="font-size:12px;font-weight:500;color:var(--text-3);margin-bottom:10px;">By area</div>'+
+    areaBreakdown+
+    '</div>'+
+    '<div class="card">'+
+    '<div class="section-header" style="margin-bottom:8px;"><span class="section-title">Upcoming</span></div>'+
+    upcomingHTML+
+    '</div></div>';
 }
 
-async function addTask(){const name=document.getElementById('t-name').value.trim();if(!name)return;setSyncing('syncing');await sb.from('tasks').insert({name,tag:document.getElementById('t-tag').value,priority:document.getElementById('t-prio').value,due:document.getElementById('t-due').value,done:false});await reload('tasks');setSyncing('ok');toggleEl('task-add-row');}
+async function addTask(){const name=document.getElementById('t-name').value.trim();if(!name)return;const dueVal=document.getElementById('t-due').value||null;setSyncing('syncing');await sb.from('tasks').insert({name,tag:document.getElementById('t-tag').value,priority:document.getElementById('t-prio').value,due:dueVal,done:false});await reload('tasks');setSyncing('ok');toggleEl('task-add-row');}
 async function toggleTask(id,done){setSyncing('syncing');await sb.from('tasks').update({done}).eq('id',id);await reload('tasks');setSyncing('ok');}
 async function deleteTask(id){setSyncing('syncing');await sb.from('tasks').delete().eq('id',id);await reload('tasks');setSyncing('ok');}
 
@@ -628,13 +678,13 @@ function renderLocCards(){
   if(!locations.length)return'<div class="empty" style="padding:32px 0;">No locations yet. Add one above.</div>';
   return`<div class="loc-grid">${locations.map(l=>`
     <div class="loc-card">
-      <div style="position:absolute;top:10px;right:10px;display:flex;gap:4px;">
-        <button class="loc-action-btn" onclick="openLocModal('${l.id}')">Edit</button>
-        <button class="btn-del" onclick="deleteLoc('${l.id}')">&#x2715;</button>
-      </div>
       <div class="loc-card-top">
         <div class="loc-name">${esc(l.name)}</div>
-        <span class="loc-badge ${locStatusClass[l.status]||''}">${locStatusLabels[l.status]||l.status}</span>
+        <div style="display:flex;align-items:center;gap:6px;flex-shrink:0;">
+          <span class="loc-badge ${locStatusClass[l.status]||''}">${locStatusLabels[l.status]||l.status}</span>
+          <button class="loc-action-btn" onclick="openLocModal('${l.id}')">Edit</button>
+          <button class="btn-del" onclick="deleteLoc('${l.id}')">&#x2715;</button>
+        </div>
       </div>
       ${l.area?`<div style="font-size:11px;color:var(--text-3);margin-bottom:8px;">&#128205; ${esc(l.area)}</div>`:''}
       <div class="loc-stars">${[1,2,3,4,5].map(n=>`<span class="star${(l.rating||0)>=n?' filled':''}">${(l.rating||0)>=n?'&#9733;':'&#9734;'}</span>`).join('')}</div>
